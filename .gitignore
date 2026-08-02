@@ -1,0 +1,48 @@
+# Node.js
+node_modules/
+.next/
+out/
+build/
+npm-debug.log*
+.env*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+.eggs/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Docker
+docker-compose.override.yml
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.nyc_output/
+
+# Misc
+*.log
+logs/
+temp/
+tmp/
