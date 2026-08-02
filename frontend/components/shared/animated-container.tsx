@@ -17,6 +17,7 @@ interface AnimatedContainerProps {
   delay?: number;
   duration?: number;
   once?: boolean;
+  variants?: Variants;
 }
 
 const animations: Record<AnimationType, Variants> = {
@@ -49,13 +50,14 @@ export function AnimatedContainer({
   delay = 0,
   duration = 0.5,
   once = true,
+  variants,
 }: AnimatedContainerProps) {
   return (
     <motion.div
       initial="hidden"
       whileInView="visible"
       viewport={{ once, margin: "-80px" }}
-      variants={animations[animation]}
+      variants={variants || animations[animation]}
       transition={{ duration, delay, ease: "easeOut" }}
       className={cn(className)}
     >
