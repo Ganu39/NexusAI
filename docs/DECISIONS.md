@@ -21,3 +21,7 @@ This document records the architectural decisions made during the development of
 ### 4. Custom UI Components vs. Full Shadcn Installation
 **Decision:** We selectively implemented only the necessary shadcn/ui components (`button`, `badge`, `card`, `separator`) and placed them in `components/ui/` rather than installing the entire library.
 **Reason:** Reduces bundle size, keeps the codebase clean of unused components, and gives us full control over the exact styling implementation to match the Linear/Vercel-inspired premium aesthetic.
+
+### 5. Final Phase 1 Polish
+**Decision:** All marketing copy on the landing page was audited to clarify that backend features (RAG, Authentication, API) are planned/upcoming.
+**Reason:** To ensure clear communication with early visitors that Phase 1 represents a visual frontend release only, and backend integration is not yet active.

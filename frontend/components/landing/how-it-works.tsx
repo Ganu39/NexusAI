@@ -2,7 +2,7 @@
 
 import { HOW_IT_WORKS } from "@/lib/constants";
 import { SectionHeader } from "@/components/shared/section-header";
-import { AnimatedContainer } from "@/components/shared/animated-container";
+import { StaggerContainer, AnimatedContainer, staggerChild } from "@/components/shared/animated-container";
 import { ArrowRight } from "lucide-react";
 
 export function HowItWorks() {
@@ -15,12 +15,11 @@ export function HowItWorks() {
           description="A powerful pipeline from document ingestion to AI generation."
         />
         
-        <div className="mt-16 flex flex-col md:flex-row justify-center items-center gap-4 md:gap-2">
+        <StaggerContainer staggerDelay={0.2} className="mt-16 flex flex-col md:flex-row justify-center items-center gap-4 md:gap-2">
           {HOW_IT_WORKS.map((step, i) => (
             <AnimatedContainer 
               key={i} 
-              animation="slide-up" 
-              delay={i * 0.1}
+              variants={staggerChild}
               className="flex flex-col md:flex-row items-center relative z-10 w-full md:w-auto"
             >
               <div className="flex flex-col items-center text-center w-40 glass p-4 rounded-xl border border-border hover:border-primary/50 transition-colors">
@@ -38,7 +37,7 @@ export function HowItWorks() {
               )}
             </AnimatedContainer>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
     </section>
   );

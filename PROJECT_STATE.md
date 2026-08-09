@@ -25,6 +25,8 @@
 - Separated all presentation data into `lib/constants.ts`.
 - Configured robust GitHub Actions CI pipeline (linting and basic tests for frontend and backend).
 
+*(Note: Phase 1 represents a visual frontend release only. RAG, Authentication, Dashboard, and backend functionality are NOT implemented yet.)*
+
 ## Upcoming Phases
 
 ### ⏳ Phase 2: Core RAG Engine

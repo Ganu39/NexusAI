@@ -21,73 +21,73 @@ export const TRUSTED_TECH = [
 export const FEATURES = [
   {
     title: "AI Chat",
-    description: "Conversational interface with memory and context tracking across your knowledge base.",
+    description: "Planned conversational interface with memory and context tracking across your knowledge base.",
     icon: MessageSquare,
   },
   {
     title: "Multi-document RAG",
-    description: "Upload and query across hundreds of documents simultaneously with precise retrieval.",
+    description: "Future support to upload and query across hundreds of documents simultaneously.",
     icon: Database,
   },
   {
     title: "Semantic Search",
-    description: "FAISS-powered vector similarity search for finding exactly what you need.",
+    description: "Planned FAISS-powered vector similarity search for finding exactly what you need.",
     icon: Search,
   },
   {
     title: "AI Summary",
-    description: "Automatically generate concise summaries of long documents and reports.",
+    description: "Upcoming feature to automatically generate concise summaries of long documents.",
     icon: FileText,
   },
   {
     title: "Flashcards",
-    description: "Transform your documents into interactive flashcards for accelerated learning.",
+    description: "Roadmap: Transform your documents into interactive flashcards for learning.",
     icon: BrainCircuit,
   },
   {
     title: "Quiz Generator",
-    description: "Create interactive quizzes from any document to test your knowledge.",
+    description: "Coming soon: Create interactive quizzes from any document to test your knowledge.",
     icon: FileQuestion,
   },
   {
     title: "OCR Extraction",
-    description: "Extract text and data from images and scanned PDFs automatically.",
+    description: "Planned extraction of text and data from images and scanned PDFs.",
     icon: GraduationCap,
   },
   {
     title: "Analytics Dashboard",
-    description: "Monitor usage, query patterns, and system performance in real-time.",
+    description: "Future analytics dashboard to monitor usage and system performance.",
     icon: LayoutDashboard,
   },
   {
     title: "Team Collaboration",
-    description: "Share knowledge bases and collaborate with team members seamlessly.",
+    description: "Planned feature to share knowledge bases and collaborate seamlessly.",
     icon: Users,
   },
   {
     title: "Enterprise Security",
-    description: "Role-based access control and secure session management.",
+    description: "Upcoming role-based access control and secure session management.",
     icon: ShieldCheck,
   },
   {
     title: "Cloud Deployment",
-    description: "Containerized deployment ready for Vercel, AWS, or your own infrastructure.",
+    description: "Designed for containerized deployment ready for Vercel, AWS, or custom infrastructure.",
     icon: Cloud,
   },
   {
     title: "API Ready",
-    description: "Integrate NexusAI directly into your own applications with our robust API.",
+    description: "Future robust API to integrate NexusAI directly into your applications.",
     icon: Server,
   },
 ];
 
 export const HOW_IT_WORKS = [
-  { step: "1", title: "Upload", description: "Upload PDFs, Word docs, or text files." },
+  { step: "1", title: "Upload", description: "Planned support to upload PDFs, Word docs, or text files." },
   { step: "2", title: "Extract", description: "Text is extracted and cleaned." },
   { step: "3", title: "Chunk", description: "Content is split into semantic chunks." },
   { step: "4", title: "Embed", description: "Chunks are converted to vector embeddings." },
   { step: "5", title: "Retrieve", description: "Relevant chunks are found via semantic search." },
-  { step: "6", title: "Answer", description: "Gemini generates a precise, cited answer." },
+  { step: "6", title: "Answer", description: "Gemini will generate a precise, cited answer." },
 ];
 
 export const ROADMAP_PHASES = [
@@ -161,7 +161,7 @@ export const FAQ_ITEMS = [
   },
   {
     question: "Which LLM does NexusAI use?",
-    answer: "NexusAI uses Google's Gemini API for its generative capabilities, providing state-of-the-art reasoning, multimodal understanding, and fast response times.",
+    answer: "NexusAI will use Google's Gemini API for its generative capabilities, providing state-of-the-art reasoning, multimodal understanding, and fast response times.",
   },
   {
     question: "Is my data secure?",

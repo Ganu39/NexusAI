@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
+import { motion, type Variants, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type AnimationType =
@@ -52,13 +52,18 @@ export function AnimatedContainer({
   once = true,
   variants,
 }: AnimatedContainerProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const activeVariants = shouldReduceMotion 
+    ? { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.1 } } } 
+    : (variants || animations[animation]);
+
   return (
     <motion.div
       initial="hidden"
       whileInView="visible"
       viewport={{ once, margin: "-80px" }}
-      variants={variants || animations[animation]}
-      transition={{ duration, delay, ease: "easeOut" }}
+      variants={activeVariants}
+      transition={{ duration: shouldReduceMotion ? 0.1 : duration, delay: shouldReduceMotion ? 0 : delay, ease: "easeOut" }}
       className={cn(className)}
     >
       {children}
@@ -79,6 +84,8 @@ export function StaggerContainer({
   staggerDelay = 0.1,
   once = true,
 }: StaggerContainerProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <motion.div
       initial="hidden"
@@ -88,7 +95,7 @@ export function StaggerContainer({
         hidden: {},
         visible: {
           transition: {
-            staggerChildren: staggerDelay,
+            staggerChildren: shouldReduceMotion ? 0 : staggerDelay,
           },
         },
       }}
