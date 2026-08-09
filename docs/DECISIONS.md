@@ -58,3 +58,27 @@ This document records the architectural decisions made during the development of
 **Decision:** Extracted document metadata and pages are stored locally in `DOCUMENTS_DIR/{document_id}.json` upon upload. The indexing endpoint (`POST /api/v1/documents/{document_id}/index`) retrieves the document by its ID rather than accepting arbitrary client-supplied text.
 **Reason:** Eliminates reliance on a heavy relational database for Phase 2B while guaranteeing document integrity and strict document isolation.
 
+## Phase 2C: RAG Answer Generation Foundation
+
+**Date:** 2026-08-09
+
+### 12. LLM Provider Abstraction (`BaseLLMProvider`)
+**Decision:** Created `BaseLLMProvider` abstract interface and implemented `GeminiLLMProvider` using Google Gemini (`gemini-2.5-flash`).
+**Reason:** Prevents coupling `RAGService` directly to Google's SDK, allowing seamless substitution of alternative LLM backends (e.g. OpenAI, Anthropic, local models) without modifying RAG orchestration logic.
+
+### 13. Grounded RAG Prompting & Anti-Hallucination Fallback
+**Decision:** Implemented `RAG_SYSTEM_INSTRUCTION` instructing the model to rely exclusively on supplied context and return a controlled fallback ("I cannot determine the answer from the uploaded documents.") when context is insufficient (`RAG_MIN_RELEVANCE_SCORE < 0.30`).
+**Reason:** Eliminates LLM hallucinations and prevents making unnecessary API calls when vector search retrieves no relevant chunks.
+
+### 14. Context Thresholding & Character Capping (`ContextBuilder`)
+**Decision:** `ContextBuilder` filters chunks below `RAG_MIN_RELEVANCE_SCORE` (0.30), caps total chunks at `MAX_CONTEXT_CHUNKS` (5), and enforces `MAX_CONTEXT_CHARACTERS` (12,000).
+**Reason:** Controls token usage, optimizes context window efficiency, and improves signal-to-noise ratio in the LLM prompt.
+
+### 15. Source Attribution Traceability
+**Decision:** `AskResponse` contains a structured `sources` list mapping every cited chunk back to its `chunk_id`, `document_id`, `filename`, `page_number` (or `null` for unpaginated text), and `score`.
+**Reason:** Guarantees transparency and auditability for enterprise users by attributing generated answers to exact source documents and pages.
+
+### 16. Prompt Injection Defense for Document Content
+**Decision:** `RAG_SYSTEM_INSTRUCTION` explicitly frames document context as untrusted reference data and instructs the LLM to ignore any instructions embedded within document text (e.g., "Ignore previous instructions...").
+**Reason:** Protects the RAG pipeline against prompt injection attacks hidden inside user-uploaded documents.
+

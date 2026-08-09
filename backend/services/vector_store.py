@@ -53,6 +53,7 @@ class FAISSVectorStore(BaseVectorStore):
         self.metadata_store: List[Dict] = []
         self.chunk_id_map: Dict[str, int] = {}
         self.dimension: Optional[int] = None
+        self.load_local()
 
     def _init_index(self, dimension: int) -> None:
         self.dimension = dimension

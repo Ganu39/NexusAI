@@ -17,6 +17,12 @@ class Settings(BaseSettings):
     CHUNK_OVERLAP: int = 150
     VECTOR_STORE_DIR: str = os.path.join(os.getcwd(), "faiss_index")
 
+    LLM_MODEL: str = "gemini-2.5-flash"
+    LLM_TEMPERATURE: float = 0.2
+    MAX_CONTEXT_CHUNKS: int = 5
+    MAX_CONTEXT_CHARACTERS: int = 12000
+    RAG_MIN_RELEVANCE_SCORE: float = 0.30
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
