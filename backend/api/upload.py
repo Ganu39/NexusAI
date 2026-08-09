@@ -123,6 +123,9 @@ async def upload_document(file: UploadFile = File(...)):
             metadata=metadata,
         )
 
+        from services.document_store import save_document
+        save_document(ingested_doc)
+
         summary = IngestedDocumentSummary(
             document_id=ingested_doc.document_id,
             filename=ingested_doc.filename,

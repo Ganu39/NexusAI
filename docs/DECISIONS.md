@@ -38,3 +38,23 @@ This document records the architectural decisions made during the development of
 **Decision:** Uploaded files undergo extension validation, MIME type checking, filename sanitization (basename + regex filtering), and size validation against `MAX_UPLOAD_SIZE_MB`. Files are saved to a configurable temporary directory under a UUID filename and deleted in a `finally:` block after extraction.
 **Reason:** Prevents path traversal attacks, shell injection, disk exhaustion, and unauthorized persistent storage of uploaded user files.
 
+## Phase 2B: Embedding & Vector Store Foundation
+
+**Date:** 2026-08-09
+
+### 8. Verified Gemini Embedding Model & Provider Abstraction
+**Decision:** Selected `models/text-embedding-004` (768 dimensions) via `langchain_google_genai.GoogleGenerativeAIEmbeddings`. Embedded provider logic inside `GeminiEmbeddingProvider` behind an abstract `BaseEmbeddingProvider` interface.
+**Reason:** Keeps the Gemini SDK isolated so alternative embedding providers can be plugged in without refactoring the RAG indexing pipeline. `EMBEDDING_MODEL` remains configurable via environment variables.
+
+### 9. Page-Aware Text Chunking & Deterministic Chunk Identifiers
+**Decision:** Text chunking (`TextChunker`) processes text page-by-page using `RecursiveCharacterTextSplitter` (chunk_size: 1000, overlap: 150), generating deterministic IDs (`{document_id}_p{page}_c{idx}`).
+**Reason:** Ensures chunk IDs are reproducible, prevents text from different PDF pages from being merged (maintaining source citation accuracy), and sets `page_number` to `None` for unpaginated TXT/DOCX files.
+
+### 10. FAISS Vector Metric & Cosine Similarity Equivalence
+**Decision:** `FAISSVectorStore` utilizes `faiss.IndexFlatIP` (Inner Product) with L2-normalized vectors (`faiss.normalize_L2`).
+**Reason:** L2-normalizing vectors prior to Inner Product calculation makes the distance metric mathematically identical to Cosine Similarity, producing normalized similarity scores where higher values indicate higher semantic relevance.
+
+### 11. Document Lifecycle & Indexing API Architecture
+**Decision:** Extracted document metadata and pages are stored locally in `DOCUMENTS_DIR/{document_id}.json` upon upload. The indexing endpoint (`POST /api/v1/documents/{document_id}/index`) retrieves the document by its ID rather than accepting arbitrary client-supplied text.
+**Reason:** Eliminates reliance on a heavy relational database for Phase 2B while guaranteeing document integrity and strict document isolation.
+
