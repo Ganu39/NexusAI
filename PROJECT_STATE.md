@@ -1,39 +1,30 @@
 # NexusAI Project State
 
-**Current Phase:** Phase 1 Complete
+**Current Phase:** Phase 2A Complete
 
 ## Completed Phases
 
 ### ✅ Phase 1: Premium Landing Page
 - Initialized Next.js frontend with Tailwind CSS and TypeScript.
-- Configured ESLint and Prettier for code quality.
-- Established design system (CSS variables, Framer Motion, shadcn/ui inspired primitives).
-- Created reusable UI components (`Button`, `Card`, `Badge`, `Separator`).
-- Implemented responsive, animated landing page sections:
-  - Navbar (sticky with scroll effects)
-  - Hero (gradients and staggered animations)
-  - Trusted Tech (infinite marquee)
-  - Features (grid layout)
-  - Product Preview (mock UI visualization)
-  - How It Works (pipeline steps)
-  - AI Capabilities
-  - Why NexusAI (comparison table)
-  - Roadmap (timeline)
-  - Pricing
-  - FAQ (accessible accordion)
-  - Final CTA & Footer
-- Separated all presentation data into `lib/constants.ts`.
-- Configured robust GitHub Actions CI pipeline (linting and basic tests for frontend and backend).
+- Established design system and reusable UI components.
+- Implemented responsive, animated landing page sections.
 
-*(Note: Phase 1 represents a visual frontend release only. RAG, Authentication, Dashboard, and backend functionality are NOT implemented yet.)*
+### ✅ Phase 2A: Data Ingestion Foundation
+- Created file upload endpoint `POST /upload` (and `/api/v1/upload`) accepting PDF, TXT, and DOCX files.
+- Built modular text extractors (`PDFExtractor`, `TXTExtractor`, `DOCXExtractor`) preserving page/structured text and metadata.
+- Implemented file validation (extension, MIME type, file size limit via `MAX_UPLOAD_SIZE_MB`).
+- Added security controls (filename sanitization, unique UUID `document_id`, path traversal prevention, temporary file cleanup).
+- Added comprehensive unit test suite covering 13 upload validation and extraction test cases.
+
+*(Note: Phase 2A covers data ingestion foundation only. Embeddings are NOT implemented yet, FAISS is NOT implemented yet, retrieval is NOT implemented yet, and Gemini generation is NOT implemented yet.)*
 
 ## Upcoming Phases
 
-### ⏳ Phase 2: Core RAG Engine
-- Document ingestion pipeline (PDF, text).
-- Vectorization using Google Gemini embeddings.
-- FAISS vector store integration.
-- Context retrieval API.
+### ⏳ Phase 2B-2I: Core RAG Pipeline
+- Text processing & chunking (2B).
+- Gemini embeddings (2C).
+- FAISS vector store integration (2D).
+- Context retrieval API & generation (2E-2I).
 
 ### ⏳ Phase 3: Chat Interface
 - Conversational UI.

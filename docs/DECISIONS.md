@@ -25,3 +25,16 @@ This document records the architectural decisions made during the development of
 ### 5. Final Phase 1 Polish
 **Decision:** All marketing copy on the landing page was audited to clarify that backend features (RAG, Authentication, API) are planned/upcoming.
 **Reason:** To ensure clear communication with early visitors that Phase 1 represents a visual frontend release only, and backend integration is not yet active.
+
+## Phase 2A: Data Ingestion Foundation
+
+**Date:** 2026-08-09
+
+### 6. Modular Extraction Strategy & Structured Page Representation
+**Decision:** Implemented separate text extractors (`PDFExtractor`, `TXTExtractor`, `DOCXExtractor`) returning a structured `pages` array `[{"page_number": int | None, "text": str}]` along with document metadata.
+**Reason:** Keeps extraction decoupled from FastAPI routing, preserves page-level metadata required for future source attribution/citations, and provides a uniform data model across document formats.
+
+### 7. File Ingestion Security & Temporary Lifecycle
+**Decision:** Uploaded files undergo extension validation, MIME type checking, filename sanitization (basename + regex filtering), and size validation against `MAX_UPLOAD_SIZE_MB`. Files are saved to a configurable temporary directory under a UUID filename and deleted in a `finally:` block after extraction.
+**Reason:** Prevents path traversal attacks, shell injection, disk exhaustion, and unauthorized persistent storage of uploaded user files.
+
