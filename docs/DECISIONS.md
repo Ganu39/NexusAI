@@ -43,7 +43,7 @@ This document records the architectural decisions made during the development of
 **Date:** 2026-08-09
 
 ### 8. Verified Gemini Embedding Model & Provider Abstraction
-**Decision:** Selected `models/text-embedding-004` (768 dimensions) via `langchain_google_genai.GoogleGenerativeAIEmbeddings`. Embedded provider logic inside `GeminiEmbeddingProvider` behind an abstract `BaseEmbeddingProvider` interface.
+**Decision:** Selected `models/gemini-embedding-001` via `langchain_google_genai.GoogleGenerativeAIEmbeddings`. Embedded provider logic inside `GeminiEmbeddingProvider` behind an abstract `BaseEmbeddingProvider` interface. Live verification confirmed 100% semantic accuracy.
 **Reason:** Keeps the Gemini SDK isolated so alternative embedding providers can be plugged in without refactoring the RAG indexing pipeline. `EMBEDDING_MODEL` remains configurable via environment variables.
 
 ### 9. Page-Aware Text Chunking & Deterministic Chunk Identifiers

@@ -20,9 +20,11 @@ class MockEmbeddingProvider(BaseEmbeddingProvider):
 
 def test_missing_api_key_raises_value_error():
     """Verify missing API key raises a clear ValueError."""
-    with pytest.raises(ValueError) as exc_info:
-        GeminiEmbeddingProvider(api_key="")
-    assert "GEMINI_API_KEY is not configured" in str(exc_info.value)
+    with patch("services.embedding.settings.GEMINI_API_KEY", ""), \
+         patch.dict("os.environ", {"GEMINI_API_KEY": ""}):
+        with pytest.raises(ValueError) as exc_info:
+            GeminiEmbeddingProvider(api_key="")
+        assert "GEMINI_API_KEY is not configured" in str(exc_info.value)
 
 
 @patch("langchain_google_genai.GoogleGenerativeAIEmbeddings")

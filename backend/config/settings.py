@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     DOCUMENTS_DIR: str = os.path.join(os.getcwd(), "stored_documents")
 
     GEMINI_API_KEY: str = ""
-    EMBEDDING_MODEL: str = "models/text-embedding-004"
+    EMBEDDING_MODEL: str = "models/gemini-embedding-001"
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 150
     VECTOR_STORE_DIR: str = os.path.join(os.getcwd(), "faiss_index")

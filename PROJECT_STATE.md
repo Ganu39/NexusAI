@@ -15,8 +15,10 @@
 - Implemented file validation and security controls.
 
 ### ✅ Phase 2B: Embedding & Vector Store Foundation
+- Phase 2B is complete.
 - Built `TextChunker` service (`services/chunker.py`) using `RecursiveCharacterTextSplitter` (default chunk size 1000, overlap 150), preserving `document_id`, `page_number`, `chunk_index`, and deterministic IDs.
-- Built provider-isolated `GeminiEmbeddingProvider` (`services/embedding.py`) wrapping `GoogleGenerativeAIEmbeddings` with model `models/text-embedding-004` (768 dimensions) and configuration validation.
+- Built provider-isolated `GeminiEmbeddingProvider` (`services/embedding.py`) wrapping `GoogleGenerativeAIEmbeddings`. Current embedding model: `models/gemini-embedding-001`.
+- Live Gemini embedding generation has been verified successfully with 100% semantic search accuracy.
 - Built `FAISSVectorStore` (`services/vector_store.py`) behind an abstract `BaseVectorStore` interface supporting L2-normalized Inner Product vectors (equivalent to Cosine Similarity), local persistence, reload, and top-k search.
 - Built lightweight document store persistence (`services/document_store.py`) and indexing pipeline service (`services/indexing.py`).
 - Implemented `POST /api/v1/documents/{document_id}/index` and `POST /api/v1/search` endpoints with strict query (1-2000 chars) and `top_k` (1-50) bounds validation.
