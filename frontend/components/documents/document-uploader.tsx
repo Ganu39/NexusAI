@@ -1,0 +1,283 @@
+"use client";
+
+import React, { useState, useRef } from "react";
+import {
+  Upload,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  X,
+  File,
+} from "lucide-react";
+import { apiClient } from "@/lib/api";
+import { IngestedDocumentSummary } from "@/types";
+
+interface DocumentUploaderProps {
+  onUploadSuccess?: (doc: IngestedDocumentSummary) => void;
+  compact?: boolean;
+}
+
+const ALLOWED_EXTENSIONS = ["pdf", "txt", "docx"];
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+}
+
+export function DocumentUploader({
+  onUploadSuccess,
+  compact = false,
+}: DocumentUploaderProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successDoc, setSuccessDoc] =
+    useState<IngestedDocumentSummary | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const validateFile = (file: File): string | null => {
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
+      return `Unsupported file type '.${ext || "unknown"}'. Please upload PDF, TXT, or DOCX files.`;
+    }
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      return `File size (${formatBytes(file.size)}) exceeds the maximum allowed limit of 10MB.`;
+    }
+    return null;
+  };
+
+  const handleFileSelect = (file: File) => {
+    setError(null);
+    setSuccessDoc(null);
+    const valErr = validateFile(file);
+    if (valErr) {
+      setError(valErr);
+      setSelectedFile(null);
+      return;
+    }
+    setSelectedFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      handleFileSelect(file);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFileSelect(e.target.files[0]);
+    }
+  };
+
+  const executeUpload = async (fileToUpload: File) => {
+    setUploading(true);
+    setError(null);
+    try {
+      const result = await apiClient.uploadDocument(fileToUpload);
+      setSuccessDoc(result.document);
+      setSelectedFile(null);
+      if (onUploadSuccess) {
+        onUploadSuccess(result.document);
+      }
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Upload failed. Please check your backend connection.";
+      setError(message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const triggerUpload = () => {
+    if (selectedFile) {
+      executeUpload(selectedFile);
+    }
+  };
+
+  const resetState = () => {
+    setSelectedFile(null);
+    setError(null);
+    setSuccessDoc(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  return (
+    <div className="w-full space-y-4">
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,.txt,.docx"
+        className="hidden"
+        onChange={handleInputChange}
+      />
+
+      {/* Drag & Drop Zone */}
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() => !selectedFile && !uploading && fileInputRef.current?.click()}
+        className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-all ${
+          compact ? "py-6 px-4" : "py-10 px-6"
+        } ${
+          isDragging
+            ? "border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/10"
+            : selectedFile
+            ? "border-zinc-700 bg-zinc-900/60"
+            : "border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-900/50 cursor-pointer"
+        }`}
+      >
+        {!selectedFile && !uploading && (
+          <div className="flex flex-col items-center space-y-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600/10 text-indigo-400 border border-indigo-500/20">
+              <Upload className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-base font-medium text-zinc-200">
+                Drag and drop your file here, or{" "}
+                <span className="text-indigo-400 underline underline-offset-4">
+                  browse
+                </span>
+              </p>
+              <p className="mt-1 text-xs text-zinc-500">
+                Supports PDF, TXT, and DOCX (Max 10MB)
+              </p>
+            </div>
+          </div>
+        )}
+
+        {selectedFile && !uploading && (
+          <div className="flex w-full flex-col items-center space-y-4">
+            <div className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-left w-full max-w-md">
+              <File className="h-8 w-8 text-indigo-400 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-zinc-200 truncate">
+                  {selectedFile.name}
+                </p>
+                <p className="text-xs text-zinc-500">
+                  {formatBytes(selectedFile.size)} •{" "}
+                  {selectedFile.name.split(".").pop()?.toUpperCase()}
+                </p>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  resetState();
+                }}
+                className="rounded-lg p-1 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  triggerUpload();
+                }}
+                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 transition-all hover:bg-indigo-500"
+              >
+                <Upload className="h-4 w-4" />
+                <span>Upload Document</span>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  resetState();
+                }}
+                className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {uploading && (
+          <div className="flex flex-col items-center space-y-3 py-4">
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+            <p className="text-sm font-medium text-zinc-200">
+              Extracting & Processing Document...
+            </p>
+            <p className="text-xs text-zinc-500">
+              Parsing page structure and document metadata
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Success Feedback Card */}
+      {successDoc && (
+        <div className="flex items-start gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-300">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
+          <div className="flex-1 text-sm">
+            <p className="font-semibold text-emerald-200">
+              Document Ingested Successfully!
+            </p>
+            <p className="mt-0.5 text-xs text-emerald-300/80">
+              <span className="font-medium text-emerald-200">
+                {successDoc.filename}
+              </span>{" "}
+              ({formatBytes(successDoc.file_size)}) • {successDoc.page_count}{" "}
+              {successDoc.page_count === 1 ? "page" : "pages"} •{" "}
+              {successDoc.character_count.toLocaleString()} characters
+            </p>
+          </div>
+          <button
+            onClick={() => setSuccessDoc(null)}
+            className="rounded p-1 text-emerald-400 hover:bg-emerald-500/20"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Error Message Card */}
+      {error && (
+        <div className="flex items-start gap-3 rounded-xl border border-rose-500/20 bg-rose-500/10 p-4 text-rose-300">
+          <AlertCircle className="h-5 w-5 shrink-0 text-rose-400 mt-0.5" />
+          <div className="flex-1 text-sm">
+            <p className="font-semibold text-rose-200">Upload Error</p>
+            <p className="mt-0.5 text-xs text-rose-300/80">{error}</p>
+          </div>
+          <button
+            onClick={() => setError(null)}
+            className="rounded p-1 text-rose-400 hover:bg-rose-500/20"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -82,3 +82,23 @@ This document records the architectural decisions made during the development of
 **Decision:** `RAG_SYSTEM_INSTRUCTION` explicitly frames document context as untrusted reference data and instructs the LLM to ignore any instructions embedded within document text (e.g., "Ignore previous instructions...").
 **Reason:** Protects the RAG pipeline against prompt injection attacks hidden inside user-uploaded documents.
 
+## Phase 3A: Dashboard + Document Management
+
+**Date:** 2026-08-10
+
+### 17. Document Management APIs & Safe Deletion Lifecycle
+**Decision:** Implemented `GET /api/v1/documents`, `GET /api/v1/documents/{document_id}`, and `DELETE /api/v1/documents/{document_id}` endpoints.
+**Reason:** Enables frontend document listing and management. The `DELETE` endpoint safely removes persisted document JSON metadata from storage. (Note: Document deletion removes metadata from storage; FAISS index rebuilding will be handled in vector store lifecycle management).
+
+### 18. Frontend Centralized API Client Architecture
+**Decision:** Created a single centralized API client (`frontend/lib/api.ts`) consuming `NEXT_PUBLIC_API_URL` (defaulting to `http://localhost:8000`).
+**Reason:** Eliminates hardcoded localhost URLs across UI components, centralizes error handling, and prepares the frontend for environment-driven deployment.
+
+### 19. Calculated Workspace Metrics in Dashboard
+**Decision:** `DashboardPage` calculates workspace statistics (Total Documents, Storage Used, Pages Processed, Characters Processed) directly from backend `GET /api/v1/documents` response data.
+**Reason:** Guarantees stats reflect actual backend state without presenting fake or misleading mock metrics.
+
+### 20. Application Shell & Reusable Dark-First Sidebar
+**Decision:** Created `AppShell` and `Sidebar` components adhering strictly to the Phase 1 dark-first design system tokens with mobile responsive drawer and `v0.3.0` version indicator.
+**Reason:** Establishes a unified, accessible, and responsive navigation framework for Phase 3A document management and future Phase 3B chat interfaces.
+
