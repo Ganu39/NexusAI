@@ -8,6 +8,8 @@ from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
 from config.settings import settings
 from models.document import (
+    DocumentDeleteResponse,
+    DocumentListResponse,
     IngestedDocument,
     IngestedDocumentSummary,
     UploadResponse,
@@ -133,6 +135,7 @@ async def upload_document(file: UploadFile = File(...)):
             file_size=ingested_doc.file_size,
             page_count=ingested_doc.page_count,
             character_count=ingested_doc.character_count,
+            created_at=ingested_doc.created_at,
         )
 
         return UploadResponse(
@@ -159,3 +162,68 @@ async def upload_document(file: UploadFile = File(...)):
                 os.remove(temp_file_path)
             except Exception:
                 pass
+
+
+@router.get(
+    "/documents",
+    response_model=DocumentListResponse,
+    status_code=status.HTTP_200_OK,
+    summary="List all uploaded document summaries",
+)
+async def list_documents() -> DocumentListResponse:
+    """Retrieve metadata summaries of all ingested documents."""
+    from services.document_store import list_stored_documents
+    docs = list_stored_documents()
+    return DocumentListResponse(documents=docs, total=len(docs))
+
+
+@router.get(
+    "/documents/{document_id}",
+    response_model=IngestedDocumentSummary,
+    status_code=status.HTTP_200_OK,
+    summary="Get document summary by document_id",
+)
+async def get_document(document_id: str) -> IngestedDocumentSummary:
+    """Retrieve metadata summary of a specific document."""
+    from services.document_store import get_stored_document
+    doc = get_stored_document(document_id)
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Document with ID '{document_id}' not found.",
+        )
+    return IngestedDocumentSummary(
+        document_id=doc.document_id,
+        filename=doc.filename,
+        file_type=doc.file_type,
+        file_size=doc.file_size,
+        page_count=doc.page_count,
+        character_count=doc.character_count,
+        created_at=doc.created_at,
+    )
+
+
+@router.delete(
+    "/documents/{document_id}",
+    response_model=DocumentDeleteResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Delete an ingested document by document_id",
+)
+async def delete_document(document_id: str) -> DocumentDeleteResponse:
+    """Safely delete stored document metadata.
+
+    Note: Deletes document metadata file from storage.
+    Does not rebuild FAISS vector index.
+    """
+    from services.document_store import delete_stored_document
+    deleted = delete_stored_document(document_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Document with ID '{document_id}' not found.",
+        )
+    return DocumentDeleteResponse(
+        success=True,
+        document_id=document_id,
+        message=f"Document '{document_id}' deleted successfully.",
+    )

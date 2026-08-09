@@ -52,6 +52,7 @@ class IngestedDocumentSummary(BaseModel):
     file_size: int
     page_count: int
     character_count: int
+    created_at: Optional[str] = None
 
 
 class UploadResponse(BaseModel):
@@ -60,3 +61,18 @@ class UploadResponse(BaseModel):
     success: bool = True
     document: IngestedDocumentSummary
     status: str = "extracted"
+
+
+class DocumentListResponse(BaseModel):
+    """API response model for GET /documents."""
+
+    documents: List[IngestedDocumentSummary]
+    total: int
+
+
+class DocumentDeleteResponse(BaseModel):
+    """API response model for DELETE /documents/{document_id}."""
+
+    success: bool
+    document_id: str
+    message: str
