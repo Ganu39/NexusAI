@@ -1,10 +1,10 @@
 # NexusAI Project State
 
 **Current Phase:** Phase 3A — Dashboard + Document Management
-**Status:** IN PROGRESS
-**Latest Stable Release:** v0.3.0
+**Status:** COMPLETE
+**Latest Stable Release:** v0.4.0
 
-## Completed & In-Progress Phases
+## Completed Phases
 
 ### ✅ Phase 1: Premium Landing Page
 - Initialized Next.js frontend with Tailwind CSS and TypeScript.
@@ -17,19 +17,25 @@
 - **Phase 2C (Grounded RAG):** `GeminiLLMProvider` (`gemini-2.5-flash`), `ContextBuilder`, grounded prompts with prompt-injection defense, citation attribution, and insufficient-context fallback.
 - Verified with 44+ backend unit tests, 0 flake8 errors, live Gemini integration, and GitHub release `v0.3.0`.
 
-### 🔄 Phase 3A: Dashboard + Document Management (In Progress)
-- Implemented document management backend endpoints: `GET /api/v1/documents`, `GET /api/v1/documents/{document_id}`, and `DELETE /api/v1/documents/{document_id}`.
-- Created centralized frontend API client (`frontend/lib/api.ts`) using `NEXT_PUBLIC_API_URL`.
-- Built dark-first application shell (`AppShell`) and reusable responsive `Sidebar` with `v0.3.0` branding.
-- Built `DocumentUploader` drag-and-drop component with client-side validation, progress/loading state, success feedback, and error handling.
-- Built `DocumentList` table and mobile-responsive cards with metadata display (type, size, pages, characters, upload date) and safe delete capability.
-- Built `DashboardPage` featuring real metrics calculated from backend data (Total Documents, Storage Used, Pages, Characters), quick upload CTA, recent uploads, and Getting Started guide.
-- Built `DocumentDetailPage` showing full document metadata without exposing sensitive server filesystem paths.
-- Verified 48 backend tests passing, 0 flake8 errors, frontend lint passing, frontend Next.js production build (`6/6` static/dynamic pages) successful.
+### ✅ Phase 3A: Dashboard + Document Management (v0.4.0)
+- Application shell (`AppShell`) with dark-first theme and reusable responsive `Sidebar` (`v0.4.0` branding).
+- Dashboard page with real backend-calculated metrics (Total Documents, Storage Used, Pages Processed, Characters Processed).
+- Document repository page with drag-and-drop uploader supporting PDF, TXT, DOCX files, size validation, loading, success, and error states.
+- Document list view (table for desktop, cards for mobile) with file metadata, upload dates, and safe metadata deletion.
+- Document detail view (`/documents/[documentId]`) showing structured document metadata without exposing server file paths.
+- Centralized frontend API client (`frontend/lib/api.ts`) using `NEXT_PUBLIC_API_URL`.
+- Backend document management endpoints (`GET /api/v1/documents`, `GET /api/v1/documents/{document_id}`, `DELETE /api/v1/documents/{document_id}`).
+- Verified 48 backend tests passing, 0 flake8 errors, frontend lint passing, frontend Next.js production build (`6/6` routes) successful.
 
-*(Note: Phase 3A connects the frontend application to document management APIs. Chat UI, streaming responses, conversation history, and authentication are NOT implemented.)*
+*Known Limitation:* Document deletion currently removes persisted document metadata from local storage, but does not remove previously indexed FAISS vectors. Vector lifecycle management will be addressed in a future dedicated task.
 
 ## Upcoming Phases
+
+### ⏳ Phase 3B: RAG Chat Interface
+- Conversational chat UI.
+- Grounded RAG answer streaming.
+- Source citation UI and document preview.
+- Conversation history & context management.
 
 ### ⏳ Phase 2D-2I: Advanced RAG Extensions
 - Citations & Source Attribution extensions (2G).

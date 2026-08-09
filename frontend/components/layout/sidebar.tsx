@@ -182,7 +182,7 @@ export function Sidebar() {
               </div>
             </div>
             <span className="rounded bg-indigo-500/10 px-2 py-0.5 text-xs font-semibold text-indigo-400 border border-indigo-500/20">
-              v0.3.0
+              v0.4.0
             </span>
           </div>
         </div>
