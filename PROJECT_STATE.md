@@ -1,6 +1,7 @@
 # NexusAI Project State
 
-**Current Phase:** Phase 2C Complete
+**Current Phase:** Phase 2 Complete
+**Latest Stable Release:** v0.3.0
 
 ## Completed Phases
 
