@@ -1,6 +1,7 @@
 fastapi>=0.115.0
 uvicorn[standard]>=0.30.0
 langchain>=0.3.0
+langchain-text-splitters>=0.3.0
 langchain-google-genai>=2.0.0
 faiss-cpu>=1.8.0
 sqlalchemy>=2.0.0
