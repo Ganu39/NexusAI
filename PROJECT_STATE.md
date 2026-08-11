@@ -25,7 +25,9 @@
 - Document detail view (`/documents/[documentId]`) showing structured document metadata without exposing server file paths.
 - Centralized frontend API client (`frontend/lib/api.ts`) using `NEXT_PUBLIC_API_URL`.
 - Backend document management endpoints (`GET /api/v1/documents`, `GET /api/v1/documents/{document_id}`, `DELETE /api/v1/documents/{document_id}`).
-- Verified 48 backend tests passing, 0 flake8 errors, frontend lint passing, frontend Next.js production build (`6/6` routes) successful.
+- Production deployment preparation complete: FastAPI `CORSMiddleware` configured, environment-driven dynamic storage paths (`/data/stored_documents`, `/data/faiss_index`, `/data/temp_uploads`), Render Blueprint manifest (`render.yaml`), frontend trailing-slash normalization, and automated CORS test suite verified.
+- Deployment targets: Frontend deployed on Vercel (`https://nexusai-sage-beta.vercel.app`), Backend targeted for Render Web Service (Phase 3B has NOT started).
+- Verified 52 backend tests passing, 0 flake8 errors, frontend lint passing, frontend Next.js production build (`6/6` routes) successful.
 
 *Known Limitation:* Document deletion currently removes persisted document metadata from local storage, but does not remove previously indexed FAISS vectors. Vector lifecycle management will be addressed in a future dedicated task.
 

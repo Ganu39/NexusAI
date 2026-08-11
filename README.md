@@ -147,11 +147,21 @@ Phase 3A introduces full document ingestion and repository management:
 
 ## 🧪 Testing & Verification
 
-- **Backend Test Suite:** **48 passed** (`python -m pytest`).
+- **Backend Test Suite:** **52 passed** (`python -m pytest`).
 - **Backend Code Quality:** **0 errors** (`python -m flake8 .`).
 - **Frontend Code Quality:** **0 ESLint warnings/errors** (`npm run lint`).
 - **Frontend Production Build:** **Successful compilation (`6/6` routes)** (`npm run build`).
 - **CI Automation:** GitHub Actions CI workflow automated on all main branch pushes.
+
+---
+
+## 🌐 Production Deployment
+
+- **Frontend (Vercel):** Deployed at `https://nexusai-sage-beta.vercel.app`.
+- **Backend (Render):** Configured for Render Web Service using `render.yaml` with attached persistent storage (`/data`).
+  - **Build Command:** `pip install -r requirements.txt`
+  - **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+  - **Persistent Disk:** Mounted at `/data` (`DOCUMENTS_DIR=/data/stored_documents`, `VECTOR_STORE_DIR=/data/faiss_index`, `UPLOAD_DIR=/data/temp_uploads`).
 
 ---
 

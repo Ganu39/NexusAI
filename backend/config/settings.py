@@ -1,6 +1,7 @@
-"""Configuration settings for NexusAI Backend."""
-
+import json
 import os
+from typing import List, Union
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -22,6 +23,30 @@ class Settings(BaseSettings):
     MAX_CONTEXT_CHUNKS: int = 5
     MAX_CONTEXT_CHARACTERS: int = 12000
     RAG_MIN_RELEVANCE_SCORE: float = 0.30
+
+    ALLOWED_ORIGINS: Union[List[str], str] = [
+        "https://nexusai-sage-beta.vercel.app",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
+
+    @field_validator("ALLOWED_ORIGINS", mode="after")
+    @classmethod
+    def validate_allowed_origins(cls, v: Union[List[str], str]) -> List[str]:
+        if isinstance(v, str):
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    parsed = json.loads(v)
+                    if isinstance(parsed, list):
+                        return [str(item).strip() for item in parsed]
+                except Exception:
+                    pass
+            return [
+                origin.strip() for origin in v.split(",") if origin.strip()
+            ]
+        return v
 
     model_config = SettingsConfigDict(
         env_file=".env",

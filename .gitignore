@@ -46,3 +46,12 @@ htmlcov/
 logs/
 temp/
 tmp/
+
+# NexusAI Runtime Data
+faiss_index/
+backend/faiss_index/
+stored_documents/
+backend/stored_documents/
+temp_uploads/
+backend/temp_uploads/
+

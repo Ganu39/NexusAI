@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: nexusai-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://nexusai-sage-beta.vercel.app,http://localhost:3000,http://127.0.0.1:3000
+      - key: DOCUMENTS_DIR
+        value: /data/stored_documents
+      - key: VECTOR_STORE_DIR
+        value: /data/faiss_index
+      - key: UPLOAD_DIR
+        value: /data/temp_uploads
+    disk:
+      name: nexusai-data
+      mountPath: /data
+      sizeGB: 1
