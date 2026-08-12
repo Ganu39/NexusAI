@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FileText,
+  MessageSquare,
   Settings,
   Menu,
   X,
@@ -32,6 +33,11 @@ const navItems: NavItem[] = [
     name: "Documents",
     href: "/documents",
     icon: FileText,
+  },
+  {
+    name: "RAG Q&A Chat",
+    href: "/chat",
+    icon: MessageSquare,
   },
   {
     name: "Settings",

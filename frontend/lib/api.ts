@@ -1,15 +1,17 @@
 import {
+  AskResponse,
   DocumentDeleteResponse,
   DocumentListResponse,
+  IndexingResponse,
   IngestedDocumentSummary,
   UploadResponse,
 } from "@/types";
 
 const rawBaseUrl =
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+  process.env.NEXT_PUBLIC_API_URL || "https://nexusai-1xq9.onrender.com";
 const API_BASE_URL = rawBaseUrl.replace(/\/+$/, "");
 
-class ApiClientError extends Error {
+export class ApiClientError extends Error {
   status: number;
 
   constructor(message: string, status: number) {
@@ -35,6 +37,19 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+async function safeFetch(url: string, options?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, options);
+  } catch (err) {
+    const errorMsg =
+      err instanceof Error ? err.message : "Network error connecting to backend";
+    throw new ApiClientError(
+      `${errorMsg}. If the backend is idling on Render, it may take 15–30 seconds to wake up.`,
+      0
+    );
+  }
+}
+
 export const apiClient = {
   /**
    * Upload a PDF, TXT, or DOCX document to backend.
@@ -43,7 +58,7 @@ export const apiClient = {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch(`${API_BASE_URL}/api/v1/upload`, {
+    const response = await safeFetch(`${API_BASE_URL}/api/v1/upload`, {
       method: "POST",
       body: formData,
     });
@@ -55,7 +70,7 @@ export const apiClient = {
    * List metadata summaries of all ingested documents.
    */
   async listDocuments(): Promise<DocumentListResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/v1/documents`, {
+    const response = await safeFetch(`${API_BASE_URL}/api/v1/documents`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -69,7 +84,7 @@ export const apiClient = {
    * Get metadata summary of a specific document by ID.
    */
   async getDocument(documentId: string): Promise<IngestedDocumentSummary> {
-    const response = await fetch(
+    const response = await safeFetch(
       `${API_BASE_URL}/api/v1/documents/${encodeURIComponent(documentId)}`,
       {
         method: "GET",
@@ -83,10 +98,27 @@ export const apiClient = {
   },
 
   /**
+   * Chunk, embed, and index an ingested document into FAISS vector store.
+   */
+  async indexDocument(documentId: string): Promise<IndexingResponse> {
+    const response = await safeFetch(
+      `${API_BASE_URL}/api/v1/documents/${encodeURIComponent(documentId)}/index`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+
+    return handleResponse<IndexingResponse>(response);
+  },
+
+  /**
    * Delete an ingested document metadata from storage by ID.
    */
   async deleteDocument(documentId: string): Promise<DocumentDeleteResponse> {
-    const response = await fetch(
+    const response = await safeFetch(
       `${API_BASE_URL}/api/v1/documents/${encodeURIComponent(documentId)}`,
       {
         method: "DELETE",
@@ -97,5 +129,21 @@ export const apiClient = {
     );
 
     return handleResponse<DocumentDeleteResponse>(response);
+  },
+
+  /**
+   * Execute grounded RAG answer generation with source attributions.
+   */
+  async askQuestion(question: string, topK: number = 5): Promise<AskResponse> {
+    const response = await safeFetch(`${API_BASE_URL}/api/v1/ask`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ question, top_k: topK }),
+    });
+
+    return handleResponse<AskResponse>(response);
   },
 };

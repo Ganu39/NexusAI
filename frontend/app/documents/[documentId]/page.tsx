@@ -15,6 +15,8 @@ import {
   AlertCircle,
   Loader2,
   Shield,
+  Cpu,
+  Sparkles,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { apiClient } from "@/lib/api";
@@ -57,6 +59,11 @@ export default function DocumentDetailPage({ params }: PageParams) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [indexing, setIndexing] = useState(false);
+  const [indexResult, setIndexResult] = useState<{
+    chunks: number;
+    embeddings: number;
+  } | null>(null);
 
   useEffect(() => {
     async function loadDoc() {
@@ -77,6 +84,25 @@ export default function DocumentDetailPage({ params }: PageParams) {
     }
     loadDoc();
   }, [documentId]);
+
+  const handleIndex = async () => {
+    if (!doc) return;
+    setIndexing(true);
+    setError(null);
+    try {
+      const res = await apiClient.indexDocument(doc.document_id);
+      setIndexResult({
+        chunks: res.chunks_created,
+        embeddings: res.embeddings_created,
+      });
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to generate vector index.";
+      setError(msg);
+    } finally {
+      setIndexing(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (!doc) return;
@@ -115,18 +141,32 @@ export default function DocumentDetailPage({ params }: PageParams) {
             <span>Back to Documents</span>
           </Link>
           {doc && (
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="flex items-center gap-2 rounded-lg border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-300 hover:bg-rose-500/20 disabled:opacity-50"
-            >
-              {deleting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Trash2 className="h-4 w-4" />
-              )}
-              <span>Delete Document</span>
-            </button>
+            <>
+              <button
+                onClick={handleIndex}
+                disabled={indexing || deleting}
+                className="flex items-center gap-2 rounded-lg border border-indigo-500/20 bg-indigo-600/10 px-4 py-2 text-sm font-semibold text-indigo-300 hover:bg-indigo-600/20 disabled:opacity-50"
+              >
+                {indexing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Cpu className="h-4 w-4" />
+                )}
+                <span>{indexResult ? "Re-Index Vector" : "Index Vector"}</span>
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting || indexing}
+                className="flex items-center gap-2 rounded-lg border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-300 hover:bg-rose-500/20 disabled:opacity-50"
+              >
+                {deleting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4" />
+                )}
+                <span>Delete Document</span>
+              </button>
+            </>
           )}
         </div>
       }
@@ -141,7 +181,7 @@ export default function DocumentDetailPage({ params }: PageParams) {
           <AlertCircle className="h-10 w-10 text-rose-400" />
           <div>
             <h3 className="text-lg font-semibold text-rose-200">
-              Document Not Found
+              Document Error
             </h3>
             <p className="mt-1 text-xs text-rose-300/80">{error}</p>
           </div>
@@ -173,11 +213,35 @@ export default function DocumentDetailPage({ params }: PageParams) {
               </div>
             </div>
 
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              Uploaded & Ingested
-            </span>
+            {indexResult ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-500/10 px-3 py-1 text-xs font-medium text-purple-300 border border-purple-500/20">
+                <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+                Indexed ({indexResult.chunks} Chunks)
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Uploaded & Ingested
+              </span>
+            )}
           </div>
+
+          {/* Index Result Banner */}
+          {indexResult && (
+            <div className="flex items-center gap-3 rounded-xl border border-purple-500/20 bg-purple-500/10 p-4 text-purple-300 text-sm">
+              <Sparkles className="h-5 w-5 text-purple-400 shrink-0" />
+              <div>
+                <p className="font-semibold text-purple-200">
+                  Document Vector Embeddings Generated Successfully!
+                </p>
+                <p className="text-xs text-purple-300/80 mt-0.5">
+                  Created {indexResult.chunks} page-aware text chunks and{" "}
+                  {indexResult.embeddings} Gemini vector embeddings in local FAISS
+                  index.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Metadata Grid */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -222,7 +286,7 @@ export default function DocumentDetailPage({ params }: PageParams) {
             </div>
           </div>
 
-          {/* Security & System Info Card */}
+          {/* System Info Card */}
           <div className="rounded-2xl border border-zinc-800 bg-zinc-900/20 p-6 space-y-3">
             <h3 className="text-sm font-bold text-zinc-300 flex items-center gap-2">
               <Shield className="h-4 w-4 text-indigo-400" />
@@ -236,7 +300,7 @@ export default function DocumentDetailPage({ params }: PageParams) {
                 • Full document text is safely stored in backend isolated storage.
               </p>
               <p>
-                • Ready for Phase 2 vector chunking, embedding, and grounded RAG answer generation.
+                • Vector embeddings generated via Gemini (`models/gemini-embedding-001`) and indexed in FAISS vector store.
               </p>
             </div>
           </div>

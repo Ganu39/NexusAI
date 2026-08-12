@@ -40,6 +40,35 @@ export interface DocumentDeleteResponse {
   message: string;
 }
 
+export interface IndexingResponse {
+  document_id: string;
+  chunks_created: number;
+  embeddings_created: number;
+  indexed: boolean;
+}
+
+export interface AskRequest {
+  question: string;
+  top_k?: number;
+}
+
+export interface AskSource {
+  chunk_id: string;
+  document_id: string;
+  filename: string;
+  page_number?: number | null;
+  score: number;
+  metadata?: Record<string, unknown>;
+}
+
+export interface AskResponse {
+  question: string;
+  answer: string;
+  sources: AskSource[];
+  retrieved_chunks: number;
+  grounded: boolean;
+}
+
 export interface ApiError {
   detail: string;
 }
