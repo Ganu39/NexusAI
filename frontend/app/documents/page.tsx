@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import { AppShell } from "@/components/layout/app-shell";
 import { DocumentUploader } from "@/components/documents/document-uploader";
 import { DocumentList } from "@/components/documents/document-list";
 import { apiClient } from "@/lib/api";
 import { IngestedDocumentSummary } from "@/types";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, MessageSquare } from "lucide-react";
 
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState<IngestedDocumentSummary[]>([]);
@@ -39,14 +40,23 @@ export default function DocumentsPage() {
       title="Document Management"
       description="Ingest, view, and manage files in your NexusAI knowledge repository."
       action={
-        <button
-          onClick={fetchDocuments}
-          disabled={loading}
-          className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-          <span>Refresh</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/chat"
+            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-500"
+          >
+            <MessageSquare className="h-4 w-4" />
+            <span>Open RAG Chat</span>
+          </Link>
+          <button
+            onClick={fetchDocuments}
+            disabled={loading}
+            className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            <span>Refresh</span>
+          </button>
+        </div>
       }
     >
       <div className="space-y-8">

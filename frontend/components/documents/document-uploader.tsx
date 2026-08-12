@@ -9,6 +9,8 @@ import {
   Loader2,
   X,
   File,
+  Cpu,
+  Sparkles,
 } from "lucide-react";
 import { apiClient } from "@/lib/api";
 import { IngestedDocumentSummary } from "@/types";
@@ -39,6 +41,8 @@ export function DocumentUploader({
   const [error, setError] = useState<string | null>(null);
   const [successDoc, setSuccessDoc] =
     useState<IngestedDocumentSummary | null>(null);
+  const [indexing, setIndexing] = useState(false);
+  const [indexSuccess, setIndexSuccess] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -56,6 +60,7 @@ export function DocumentUploader({
   const handleFileSelect = (file: File) => {
     setError(null);
     setSuccessDoc(null);
+    setIndexSuccess(null);
     const valErr = validateFile(file);
     if (valErr) {
       setError(valErr);
@@ -104,10 +109,13 @@ export function DocumentUploader({
         onUploadSuccess(result.document);
       }
     } catch (err: unknown) {
-      const message =
+      let message =
         err instanceof Error
           ? err.message
           : "Upload failed. Please check your backend connection.";
+      if (message.includes("contains no extractable text")) {
+        message = `${fileToUpload.name} contains no extractable text. Please ensure the document is not empty or image-only.`;
+      }
       setError(message);
     } finally {
       setUploading(false);
@@ -120,10 +128,27 @@ export function DocumentUploader({
     }
   };
 
+  const handleQuickIndex = async (docId: string) => {
+    setIndexing(true);
+    try {
+      const res = await apiClient.indexDocument(docId);
+      setIndexSuccess(
+        `Indexed into FAISS: ${res.chunks_created} chunks and ${res.embeddings_created} Gemini embeddings created!`
+      );
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to index document.";
+      setError(msg);
+    } finally {
+      setIndexing(false);
+    }
+  };
+
   const resetState = () => {
     setSelectedFile(null);
     setError(null);
     setSuccessDoc(null);
+    setIndexSuccess(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -238,27 +263,54 @@ export function DocumentUploader({
 
       {/* Success Feedback Card */}
       {successDoc && (
-        <div className="flex items-start gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-300">
-          <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
-          <div className="flex-1 text-sm">
-            <p className="font-semibold text-emerald-200">
-              Document Ingested Successfully!
-            </p>
-            <p className="mt-0.5 text-xs text-emerald-300/80">
-              <span className="font-medium text-emerald-200">
-                {successDoc.filename}
-              </span>{" "}
-              ({formatBytes(successDoc.file_size)}) • {successDoc.page_count}{" "}
-              {successDoc.page_count === 1 ? "page" : "pages"} •{" "}
-              {successDoc.character_count.toLocaleString()} characters
-            </p>
+        <div className="flex flex-col gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-300">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-semibold text-emerald-200">
+                  Document Ingested Successfully!
+                </p>
+                <p className="mt-0.5 text-xs text-emerald-300/80">
+                  <span className="font-medium text-emerald-200">
+                    {successDoc.filename}
+                  </span>{" "}
+                  ({formatBytes(successDoc.file_size)}) • {successDoc.page_count}{" "}
+                  {successDoc.page_count === 1 ? "page" : "pages"} •{" "}
+                  {successDoc.character_count.toLocaleString()} characters
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setSuccessDoc(null)}
+              className="rounded p-1 text-emerald-400 hover:bg-emerald-500/20"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
-          <button
-            onClick={() => setSuccessDoc(null)}
-            className="rounded p-1 text-emerald-400 hover:bg-emerald-500/20"
-          >
-            <X className="h-4 w-4" />
-          </button>
+
+          <div className="flex items-center justify-between border-t border-emerald-500/20 pt-2 text-xs">
+            <span className="text-emerald-300/80">Next step: Generate vector embeddings for RAG search.</span>
+            <button
+              onClick={() => handleQuickIndex(successDoc.document_id)}
+              disabled={indexing || Boolean(indexSuccess)}
+              className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+            >
+              {indexing ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Cpu className="h-3.5 w-3.5" />
+              )}
+              <span>{indexSuccess ? "Indexed" : "Index Vector Now"}</span>
+            </button>
+          </div>
+
+          {indexSuccess && (
+            <div className="flex items-center gap-2 rounded-lg bg-purple-500/10 p-2.5 text-xs text-purple-300 border border-purple-500/20">
+              <Sparkles className="h-4 w-4 text-purple-400 shrink-0" />
+              <span>{indexSuccess}</span>
+            </div>
+          )}
         </div>
       )}
 

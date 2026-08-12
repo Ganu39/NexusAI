@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { PRICING_TIERS } from "@/lib/constants";
 import { SectionHeader } from "@/components/shared/section-header";
 import { AnimatedContainer, StaggerContainer, staggerChild } from "@/components/shared/animated-container";
@@ -17,7 +18,7 @@ export function Pricing() {
           title="Simple, Transparent Pricing"
           description="Start for free, upgrade when you need enterprise power."
         />
-        
+
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
           {PRICING_TIERS.map((tier, i) => (
             <AnimatedContainer key={i} variants={staggerChild}>
@@ -27,7 +28,7 @@ export function Pricing() {
                     <Badge variant="default" className="uppercase tracking-widest text-[10px]">Most Popular</Badge>
                   </div>
                 )}
-                
+
                 <CardHeader className="text-center pb-8 pt-8">
                   <CardTitle className="text-xl text-muted-foreground font-normal mb-2">{tier.name}</CardTitle>
                   <div className="flex items-baseline justify-center gap-1">
@@ -36,7 +37,7 @@ export function Pricing() {
                   </div>
                   <CardDescription className="mt-4">{tier.description}</CardDescription>
                 </CardHeader>
-                
+
                 <CardContent className="flex-1">
                   <ul className="space-y-4">
                     {tier.features.map((feature, j) => (
@@ -47,15 +48,23 @@ export function Pricing() {
                     ))}
                   </ul>
                 </CardContent>
-                
+
                 <CardFooter>
-                  <Button 
-                    className="w-full" 
-                    variant={tier.available ? "default" : "outline"}
-                    disabled={!tier.available}
-                  >
-                    {tier.cta}
-                  </Button>
+                  {tier.available ? (
+                    <Button asChild className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold">
+                      <Link href="/dashboard">
+                        {tier.cta}
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button 
+                      className="w-full" 
+                      variant="outline"
+                      disabled
+                    >
+                      {tier.cta}
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             </AnimatedContainer>

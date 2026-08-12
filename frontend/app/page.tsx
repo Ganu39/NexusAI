@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/landing/navbar";
 import { Hero } from "@/components/landing/hero";
+import { ProductActions } from "@/components/landing/product-actions";
 import { TrustedTech } from "@/components/landing/trusted-tech";
 import { Features } from "@/components/landing/features";
 import { ProductPreview } from "@/components/landing/product-preview";
@@ -18,6 +19,7 @@ export default function Home() {
       <Navbar />
       <main className="flex min-h-screen flex-col overflow-hidden">
         <Hero />
+        <ProductActions />
         <TrustedTech />
         <Features />
         <ProductPreview />

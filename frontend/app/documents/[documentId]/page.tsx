@@ -17,6 +17,7 @@ import {
   Shield,
   Cpu,
   Sparkles,
+  MessageSquare,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { apiClient } from "@/lib/api";
@@ -139,6 +140,13 @@ export default function DocumentDetailPage({ params }: PageParams) {
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Documents</span>
+          </Link>
+          <Link
+            href="/chat"
+            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-500"
+          >
+            <MessageSquare className="h-4 w-4" />
+            <span>Ask about Document</span>
           </Link>
           {doc && (
             <>
