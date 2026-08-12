@@ -58,9 +58,9 @@ export function Hero() {
             </Button>
 
             <Button asChild size="lg" variant="ghost" className="gap-2 text-base h-12 px-4 w-full sm:w-auto text-zinc-400 hover:text-white">
-              <Link href="https://github.com/Ganu39/NexusAI" target="_blank">
+              <Link href="https://github.com/Ganu39/NexusAI" target="_blank" rel="noreferrer">
                 <GitBranch className="w-4 h-4" />
-                GitHub
+                View on GitHub ↗
               </Link>
             </Button>
           </AnimatedContainer>

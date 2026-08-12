@@ -8,171 +8,179 @@ export const NAV_LINKS = [
   { name: "Features", href: "#features" },
   { name: "How it Works", href: "#how-it-works" },
   { name: "Roadmap", href: "#roadmap" },
-  { name: "Pricing", href: "#pricing" },
   { name: "FAQ", href: "#faq" },
 ];
 
 export const TRUSTED_TECH = [
   "React", "Next.js", "TypeScript", "Tailwind CSS", 
   "FastAPI", "Python", "LangChain", "Gemini", 
-  "FAISS", "PostgreSQL", "Docker", "AWS"
+  "FAISS", "Render", "Vercel", "Docker"
 ];
 
 export const FEATURES = [
   {
-    title: "AI Chat",
-    description: "Planned conversational interface with memory and context tracking across your knowledge base.",
+    title: "Grounded RAG Chat",
+    description: "Interactive Q&A grounded exclusively in your uploaded knowledge base with source citations.",
     icon: MessageSquare,
   },
   {
-    title: "Multi-document RAG",
-    description: "Future support to upload and query across hundreds of documents simultaneously.",
+    title: "Multi-Format Ingestion",
+    description: "Support to upload, parse, and extract structured text from PDF, TXT, and DOCX files.",
     icon: Database,
   },
   {
-    title: "Semantic Search",
-    description: "Planned FAISS-powered vector similarity search for finding exactly what you need.",
+    title: "FAISS Semantic Search",
+    description: "High-performance vector similarity search using L2-normalized Inner Product similarity.",
     icon: Search,
   },
   {
-    title: "AI Summary",
-    description: "Upcoming feature to automatically generate concise summaries of long documents.",
+    title: "Page-Aware Chunking",
+    description: "Recursive text splitting preserving page numbers, chunk indices, and document metadata.",
     icon: FileText,
   },
   {
-    title: "Flashcards",
-    description: "Roadmap: Transform your documents into interactive flashcards for learning.",
+    title: "Gemini Vector Embeddings",
+    description: "3072-dimensional vector embedding generation using Google Gemini models.",
     icon: BrainCircuit,
   },
   {
-    title: "Quiz Generator",
-    description: "Coming soon: Create interactive quizzes from any document to test your knowledge.",
-    icon: FileQuestion,
-  },
-  {
-    title: "OCR Extraction",
-    description: "Planned extraction of text and data from images and scanned PDFs.",
-    icon: GraduationCap,
-  },
-  {
-    title: "Analytics Dashboard",
-    description: "Future analytics dashboard to monitor usage and system performance.",
+    title: "Workspace Dashboard",
+    description: "Real-time analytics monitoring total documents, storage usage, pages, and characters.",
     icon: LayoutDashboard,
   },
   {
-    title: "Team Collaboration",
-    description: "Planned feature to share knowledge bases and collaborate seamlessly.",
-    icon: Users,
-  },
-  {
-    title: "Enterprise Security",
-    description: "Upcoming role-based access control and secure session management.",
+    title: "Prompt Injection Defense",
+    description: "Strict prompt framing isolating document context to defend against injection attacks.",
     icon: ShieldCheck,
   },
   {
-    title: "Cloud Deployment",
-    description: "Designed for containerized deployment ready for Vercel, AWS, or custom infrastructure.",
+    title: "Source Citations",
+    description: "Answers include exact citations for filename, page number, chunk ID, and relevance score.",
+    icon: FileQuestion,
+  },
+  {
+    title: "Document Repository",
+    description: "Centralized workspace for uploading, inspecting details, indexing, and safe metadata deletion.",
+    icon: Server,
+  },
+  {
+    title: "Production Infrastructure",
+    description: "Decoupled cloud deployment running Next.js on Vercel and FastAPI on Render with persistent disk.",
     icon: Cloud,
   },
   {
-    title: "API Ready",
-    description: "Future robust API to integrate NexusAI directly into your applications.",
-    icon: Server,
+    title: "Relevance Thresholding",
+    description: "Automatic similarity score filtering with controlled fallback for low-relevance queries.",
+    icon: GraduationCap,
+  },
+  {
+    title: "Multi-Turn Context",
+    description: "Built for extending conversation history and multi-turn knowledge retrieval.",
+    icon: Users,
   },
 ];
 
 export const HOW_IT_WORKS = [
-  { step: "1", title: "Upload", description: "Planned support to upload PDFs, Word docs, or text files." },
-  { step: "2", title: "Extract", description: "Text is extracted and cleaned." },
-  { step: "3", title: "Chunk", description: "Content is split into semantic chunks." },
-  { step: "4", title: "Embed", description: "Chunks are converted to vector embeddings." },
-  { step: "5", title: "Retrieve", description: "Relevant chunks are found via semantic search." },
-  { step: "6", title: "Answer", description: "Gemini will generate a precise, cited answer." },
+  { step: "1", title: "Upload", description: "Upload PDF, TXT, or DOCX documents to the repository." },
+  { step: "2", title: "Extract", description: "Format-specific extractors parse raw text and page numbers." },
+  { step: "3", title: "Chunk", description: "Content is split into page-aware semantic chunks." },
+  { step: "4", title: "Embed", description: "Chunks are embedded into vectors using Google Gemini." },
+  { step: "5", title: "Retrieve", description: "Relevant context is fetched via FAISS similarity search." },
+  { step: "6", title: "Answer", description: "Gemini synthesizes a grounded answer with citations." },
 ];
 
 export const ROADMAP_PHASES = [
   {
     phase: "Phase 1",
-    title: "Foundation",
-    description: "Project setup, authentication, and base UI components.",
-    status: "current",
+    title: "Backend Foundation",
+    statusLabel: "COMPLETED",
+    status: "completed",
+    items: [
+      "FastAPI backend",
+      "Document upload and extraction",
+      "Document management APIs",
+      "Backend testing"
+    ],
   },
   {
     phase: "Phase 2",
-    title: "Core RAG",
-    description: "Document ingestion, vectorization, and retrieval pipeline.",
-    status: "upcoming",
+    title: "RAG Pipeline",
+    statusLabel: "COMPLETED",
+    status: "completed",
+    items: [
+      "Text chunking",
+      "Gemini embeddings",
+      "FAISS vector indexing",
+      "Semantic search",
+      "Grounded RAG answers",
+      "Source attribution"
+    ],
   },
   {
     phase: "Phase 3",
-    title: "Chat Interface",
-    description: "Conversational UI, streaming responses, and context management.",
-    status: "upcoming",
+    title: "Production Integration",
+    statusLabel: "COMPLETED",
+    status: "completed",
+    items: [
+      "Production backend deployment",
+      "Next.js frontend",
+      "Document management UI",
+      "Document upload & indexing workflow",
+      "Grounded RAG Chat",
+      "Production deployment",
+      "UX and navigation improvements"
+    ],
   },
   {
     phase: "Phase 4",
-    title: "Enterprise",
-    description: "Analytics, RBAC, audit logging, and API keys.",
-    status: "upcoming",
+    title: "Production Hardening & RAG Quality",
+    statusLabel: "IN PROGRESS",
+    status: "current",
+    items: [
+      "Persistent indexing status",
+      "Improved document management",
+      "Better source and citation experience",
+      "Chat history",
+      "Retry and error handling",
+      "Document re-indexing",
+      "Document search, filtering and sorting",
+      "RAG quality improvements",
+      "End-to-end production testing"
+    ],
   },
   {
     phase: "Phase 5",
-    title: "Scale",
-    description: "Kubernetes orchestration, monitoring, and multi-tenancy.",
-    status: "upcoming",
-  },
-];
-
-export const PRICING_TIERS = [
-  {
-    name: "Community",
-    price: "Free",
-    description: "For individuals and small projects.",
-    features: ["Up to 100 documents", "Basic RAG capabilities", "Community support", "Standard Gemini model"],
-    cta: "Get Started Free",
-    popular: false,
-    available: true,
-  },
-  {
-    name: "Pro",
-    price: "$19",
-    period: "/month",
-    description: "For professionals and teams needing more power.",
-    features: ["Unlimited documents", "Advanced RAG & Semantic Search", "Priority support", "Gemini Pro model", "Analytics Dashboard"],
-    cta: "Coming Soon",
-    popular: true,
-    available: false,
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    description: "For large organizations with custom requirements.",
-    features: ["Custom deployments (AWS/K8s)", "SSO & Advanced RBAC", "Dedicated success manager", "Custom model fine-tuning", "SLA guarantees"],
-    cta: "Coming Soon",
-    popular: false,
-    available: false,
+    title: "Advanced Infrastructure",
+    statusLabel: "PLANNED",
+    status: "planned",
+    items: [
+      "Cloud vector database",
+      "Streaming RAG responses",
+      "Authentication and RBAC",
+      "Advanced scalability"
+    ],
   },
 ];
 
 export const FAQ_ITEMS = [
   {
     question: "What is Retrieval-Augmented Generation (RAG)?",
-    answer: "RAG is an AI framework that retrieves facts from an external knowledge base to ground large language models (LLMs) on the most accurate, up-to-date information and give users insight into the LLM's generative process.",
+    answer: "RAG is an AI architecture that retrieves relevant document excerpts from a vector database to ground large language models (LLMs) on factual data, delivering cited, non-hallucinated answers.",
   },
   {
-    question: "Which LLM does NexusAI use?",
-    answer: "NexusAI will use Google's Gemini API for its generative capabilities, providing state-of-the-art reasoning, multimodal understanding, and fast response times.",
+    question: "Which models does NexusAI use?",
+    answer: "NexusAI uses Google Gemini 2.5 Flash for grounded RAG answer synthesis and models/gemini-embedding-001 for generating 3072-dimensional vector embeddings.",
   },
   {
-    question: "Is my data secure?",
-    answer: "Yes. In enterprise deployments, your data remains in your own infrastructure (AWS/Docker). We use secure session management, role-based access control, and follow best security practices.",
+    question: "Is my document data secure?",
+    answer: "Yes. Documents are processed through server-side environment variables (`GEMINI_API_KEY`), stored on isolated persistent disks, and shielded with prompt-injection defense instructions.",
   },
   {
-    question: "Can I deploy NexusAI on-premise?",
-    answer: "The Enterprise tier will support on-premise deployments via Kubernetes and Docker, allowing you to run the entire stack within your own VPC.",
+    question: "How does vector search work in NexusAI?",
+    answer: "Uploaded documents are chunked and stored in a local FAISS vector store. When you ask a question in RAG Chat, FAISS performs inner-product similarity search to find the most relevant chunks.",
   },
   {
     question: "What file types are supported?",
-    answer: "We plan to support PDF, DOCX, TXT, MD, CSV, and common image formats (via OCR) for document ingestion.",
+    answer: "NexusAI supports PDF, TXT, and DOCX document uploads with structured text extraction.",
   },
 ];

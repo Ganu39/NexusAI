@@ -1,8 +1,10 @@
 # NexusAI Project State
 
-**Current Phase:** Phase 3A — Dashboard + Document Management
-**Status:** COMPLETE
+**Current Phase:** Phase 4 — Production Hardening & RAG Quality
+**Status:** IN PROGRESS
 **Latest Stable Release:** v0.4.0
+**Production Frontend:** https://nexusai-sage-beta.vercel.app/
+**Production Backend:** https://nexusai-1xq9.onrender.com
 
 ## Completed Phases
 
@@ -17,43 +19,40 @@
 - **Phase 2C (Grounded RAG):** `GeminiLLMProvider` (`gemini-2.5-flash`), `ContextBuilder`, grounded prompts with prompt-injection defense, citation attribution, and insufficient-context fallback.
 - Verified with 44+ backend unit tests, 0 flake8 errors, live Gemini integration, and GitHub release `v0.3.0`.
 
-### ✅ Phase 3A: Dashboard + Document Management (v0.4.0)
-- Application shell (`AppShell`) with dark-first theme and reusable responsive `Sidebar` (`v0.4.0` branding).
-- Dashboard page with real backend-calculated metrics (Total Documents, Storage Used, Pages Processed, Characters Processed).
-- Document repository page with drag-and-drop uploader supporting PDF, TXT, DOCX files, size validation, loading, success, and error states.
-- Document list view (table for desktop, cards for mobile) with file metadata, upload dates, and safe metadata deletion.
-- Document detail view (`/documents/[documentId]`) showing structured document metadata without exposing server file paths.
-- Centralized frontend API client (`frontend/lib/api.ts`) using `NEXT_PUBLIC_API_URL`.
-- Backend document management endpoints (`GET /api/v1/documents`, `GET /api/v1/documents/{document_id}`, `DELETE /api/v1/documents/{document_id}`).
-- Production deployment preparation complete: FastAPI `CORSMiddleware` configured, environment-driven dynamic storage paths (`/data/stored_documents`, `/data/faiss_index`, `/data/temp_uploads`), Render Blueprint manifest (`render.yaml`), frontend trailing-slash normalization, and automated CORS test suite verified.
-- Deployment targets: Frontend deployed on Vercel (`https://nexusai-sage-beta.vercel.app`), Backend targeted for Render Web Service (Phase 3B has NOT started).
-- Verified 52 backend tests passing, 0 flake8 errors, frontend lint passing, frontend Next.js production build (`6/6` routes) successful.
+### ✅ Phase 3A: Production Backend Deployment
+- Configured FastAPI startup for Render Web Service deployment using `render.yaml` with persistent disk storage (`/data`).
+- Environment variable configuration for `GEMINI_API_KEY`, CORS allowed origins, upload sizes, embedding models, and storage directories.
 
-*Known Limitation:* Document deletion currently removes persisted document metadata from local storage, but does not remove previously indexed FAISS vectors. Vector lifecycle management will be addressed in a future dedicated task.
+### ✅ Phase 3B: Frontend Document Management + Grounded RAG Chat
+- Built Document Repository UI with drag-and-drop uploader supporting PDF, TXT, DOCX files.
+- Connected Document Listing, Document Details, Document Indexing, and Safe Deletion APIs.
+- Implemented Grounded RAG Q&A Chat UI (`/chat`) connected directly to production Render backend `/ask` endpoint with source citations.
+
+### ✅ Phase 3C: Frontend UX, Navigation & Production Deployment
+- Fixed Next.js App Router DOM hydration nesting bugs across all landing page CTAs using Radix UI `asChild` pattern.
+- Added interactive Product Workflows component and header shortcut actions.
+- Deployed frontend to Vercel production (`https://nexusai-sage-beta.vercel.app/`) with `Cache-Control: public, max-age=0, must-revalidate` no-cache headers for instant edge revalidation.
+
+---
+
+## Current Phase
+
+### 🛠️ Phase 4: Production Hardening & RAG Quality (IN PROGRESS)
+- Persistent document indexing status (`is_indexed`).
+- Persistent `chunks_created` and `embeddings_created` metrics.
+- Document processing state machine (`Uploaded` ➔ `Indexing` ➔ `Indexed` / `Failed`).
+- Source text snippet viewer and detailed metadata inspection.
+- Chat session history and clear chat functionality.
+- Enhanced upload/indexing/RAG error handling and retry workflows.
+- Document search, file-type filtering, sorting, and re-indexing.
+- End-to-end regression testing.
+
+---
 
 ## Upcoming Phases
 
-### ⏳ Phase 3B: RAG Chat Interface
-- Conversational chat UI.
-- Grounded RAG answer streaming.
-- Source citation UI and document preview.
-- Conversation history & context management.
-
-### ⏳ Phase 2D-2I: Advanced RAG Extensions
-- Citations & Source Attribution extensions (2G).
-- RAG API Integration & E2E Testing (2H-2I).
-
-### ⏳ Phase 3: Chat Interface
-- Conversational UI.
-- Streaming responses.
-- Context management and history.
-
-### ⏳ Phase 4: Enterprise Features
-- Authentication and RBAC.
-- Analytics dashboard.
-- API key management.
-
-### ⏳ Phase 5: Scale
-- Kubernetes orchestration.
-- Monitoring and logging.
-- Multi-tenancy support.
+### ⏳ Phase 5: Production Scale & Cloud Vector Store
+- Cloud vector database integration (Pinecone / Qdrant).
+- Automated FAISS index compaction & rebuilding.
+- Live answer streaming via Server-Sent Events (SSE).
+- User authentication, multi-tenancy, and Role-Based Access Control (RBAC).

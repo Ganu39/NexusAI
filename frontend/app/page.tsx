@@ -8,7 +8,6 @@ import { HowItWorks } from "@/components/landing/how-it-works";
 import { AiCapabilities } from "@/components/landing/ai-capabilities";
 import { WhyNexusAi } from "@/components/landing/why-nexusai";
 import { Roadmap } from "@/components/landing/roadmap";
-import { Pricing } from "@/components/landing/pricing";
 import { FAQ } from "@/components/landing/faq";
 import { FinalCTA } from "@/components/landing/final-cta";
 import { Footer } from "@/components/landing/footer";
@@ -27,7 +26,6 @@ export default function Home() {
         <AiCapabilities />
         <WhyNexusAi />
         <Roadmap />
-        <Pricing />
         <FAQ />
         <FinalCTA />
       </main>
