@@ -171,30 +171,30 @@ export function DocumentUploader({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !selectedFile && !uploading && fileInputRef.current?.click()}
-        className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-all ${
+        className={`relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 text-center transition-all ${
           compact ? "py-6 px-4" : "py-10 px-6"
         } ${
           isDragging
-            ? "border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/10"
+            ? "border-indigo-500 bg-indigo-600/10 shadow-lg shadow-indigo-600/10"
             : selectedFile
-            ? "border-zinc-700 bg-zinc-900/60"
-            : "border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-900/50 cursor-pointer"
+            ? "border-[#1E293B] bg-[#141B2D]"
+            : "border-[#1E293B] bg-[#0E131F]/50 hover:border-indigo-500/40 hover:bg-[#141B2D]/40 cursor-pointer"
         }`}
       >
         {!selectedFile && !uploading && (
           <div className="flex flex-col items-center space-y-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600/10 text-indigo-400 border border-indigo-500/20">
-              <Upload className="h-6 w-6" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600/15 text-indigo-400 border border-indigo-500/30">
+              <Upload className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-base font-medium text-zinc-200">
+              <p className="text-sm font-medium text-zinc-200">
                 Drag and drop your file here, or{" "}
-                <span className="text-indigo-400 underline underline-offset-4">
-                  browse
+                <span className="text-indigo-400 underline underline-offset-4 hover:text-indigo-300">
+                  browse files
                 </span>
               </p>
-              <p className="mt-1 text-xs text-zinc-500">
-                Supports PDF, TXT, and DOCX (Max 10MB)
+              <p className="mt-1 text-xs text-zinc-500 font-mono">
+                PDF • TXT • DOCX (Max 10MB)
               </p>
             </div>
           </div>
@@ -202,15 +202,14 @@ export function DocumentUploader({
 
         {selectedFile && !uploading && (
           <div className="flex w-full flex-col items-center space-y-4">
-            <div className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-left w-full max-w-md">
-              <File className="h-8 w-8 text-indigo-400 shrink-0" />
+            <div className="flex items-center gap-3 rounded-xl border border-[#1E293B] bg-[#0E131F] px-4 py-3 text-left w-full max-w-md">
+              <File className="h-7 w-7 text-indigo-400 shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-zinc-200 truncate">
+                <p className="text-xs font-semibold text-zinc-200 truncate">
                   {selectedFile.name}
                 </p>
-                <p className="text-xs text-zinc-500">
-                  {formatBytes(selectedFile.size)} •{" "}
-                  {selectedFile.name.split(".").pop()?.toUpperCase()}
+                <p className="text-[10px] text-zinc-500 font-mono">
+                  {formatBytes(selectedFile.size)} • {selectedFile.name.split(".").pop()?.toUpperCase()}
                 </p>
               </div>
               <button
@@ -218,7 +217,7 @@ export function DocumentUploader({
                   e.stopPropagation();
                   resetState();
                 }}
-                className="rounded-lg p-1 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800"
+                className="rounded-lg p-1 text-zinc-500 hover:text-zinc-300 hover:bg-[#141B2D]"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -230,9 +229,9 @@ export function DocumentUploader({
                   e.stopPropagation();
                   triggerUpload();
                 }}
-                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 transition-all hover:bg-indigo-500"
+                className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/20 transition-all hover:bg-indigo-500"
               >
-                <Upload className="h-4 w-4" />
+                <Upload className="h-3.5 w-3.5" />
                 <span>Upload Document</span>
               </button>
               <button
@@ -240,7 +239,7 @@ export function DocumentUploader({
                   e.stopPropagation();
                   resetState();
                 }}
-                className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+                className="rounded-xl border border-[#1E293B] bg-[#0E131F] px-4 py-2 text-xs font-medium text-zinc-400 hover:bg-[#141B2D] hover:text-zinc-200"
               >
                 Cancel
               </button>
@@ -249,30 +248,49 @@ export function DocumentUploader({
         )}
 
         {uploading && (
-          <div className="flex flex-col items-center space-y-3 py-4">
+          <div className="flex flex-col items-center space-y-4 py-6">
             <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
-            <p className="text-sm font-medium text-zinc-200">
-              Extracting & Processing Document...
-            </p>
-            <p className="text-xs text-zinc-500">
-              Parsing page structure and document metadata
-            </p>
+            <div className="text-center space-y-1">
+              <p className="text-sm font-semibold text-white">
+                Ingesting Document to Knowledge Base...
+              </p>
+              <p className="text-xs text-zinc-400">
+                Extracting structured text, page indices, and document metadata
+              </p>
+            </div>
+
+            {/* Ingestion Pipeline Stages Progress */}
+            <div className="flex items-center gap-2 text-[10px] font-mono border border-[#1E293B] bg-[#0E131F] px-4 py-2 rounded-xl">
+              <span className="text-emerald-400 font-bold flex items-center gap-1">
+                <CheckCircle2 className="h-3 w-3" /> Uploading
+              </span>
+              <span className="text-zinc-600">→</span>
+              <span className="text-indigo-400 font-bold animate-pulse">
+                ● Extracting
+              </span>
+              <span className="text-zinc-600">→</span>
+              <span className="text-zinc-500">Chunking</span>
+              <span className="text-zinc-600">→</span>
+              <span className="text-zinc-500">Indexing</span>
+              <span className="text-zinc-600">→</span>
+              <span className="text-zinc-500">Ready</span>
+            </div>
           </div>
         )}
       </div>
 
       {/* Success Feedback Card */}
       {successDoc && (
-        <div className="flex flex-col gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-300">
+        <div className="flex flex-col gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-300">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
               <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
-              <div className="text-sm">
+              <div className="text-xs">
                 <p className="font-semibold text-emerald-200">
                   Document Ingested Successfully!
                 </p>
-                <p className="mt-0.5 text-xs text-emerald-300/80">
-                  <span className="font-medium text-emerald-200">
+                <p className="mt-0.5 text-zinc-400">
+                  <span className="font-medium text-white">
                     {successDoc.filename}
                   </span>{" "}
                   ({formatBytes(successDoc.file_size)}) • {successDoc.page_count}{" "}
@@ -289,12 +307,12 @@ export function DocumentUploader({
             </button>
           </div>
 
-          <div className="flex items-center justify-between border-t border-emerald-500/20 pt-2 text-xs">
-            <span className="text-emerald-300/80">Next step: Generate vector embeddings for RAG search.</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-emerald-500/20 pt-2 text-xs">
+            <span className="text-zinc-400 text-[11px]">Generate vector embeddings to enable RAG similarity search.</span>
             <button
               onClick={() => handleQuickIndex(successDoc.document_id)}
               disabled={indexing || Boolean(indexSuccess)}
-              className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-50 transition-all self-start sm:self-auto"
             >
               {indexing ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -306,7 +324,7 @@ export function DocumentUploader({
           </div>
 
           {indexSuccess && (
-            <div className="flex items-center gap-2 rounded-lg bg-purple-500/10 p-2.5 text-xs text-purple-300 border border-purple-500/20">
+            <div className="flex items-center gap-2 rounded-xl bg-purple-500/10 p-2.5 text-xs text-purple-300 border border-purple-500/20">
               <Sparkles className="h-4 w-4 text-purple-400 shrink-0" />
               <span>{indexSuccess}</span>
             </div>
@@ -316,11 +334,11 @@ export function DocumentUploader({
 
       {/* Error Message Card */}
       {error && (
-        <div className="flex items-start gap-3 rounded-xl border border-rose-500/20 bg-rose-500/10 p-4 text-rose-300">
+        <div className="flex items-start gap-3 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-rose-300">
           <AlertCircle className="h-5 w-5 shrink-0 text-rose-400 mt-0.5" />
-          <div className="flex-1 text-sm">
+          <div className="flex-1 text-xs">
             <p className="font-semibold text-rose-200">Upload Error</p>
-            <p className="mt-0.5 text-xs text-rose-300/80">{error}</p>
+            <p className="mt-0.5 text-rose-300/80 leading-relaxed">{error}</p>
           </div>
           <button
             onClick={() => setError(null)}

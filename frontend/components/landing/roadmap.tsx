@@ -9,12 +9,12 @@ import { Badge } from "@/components/ui/badge";
 
 export function Roadmap() {
   return (
-    <section id="roadmap" className="py-24 relative bg-card/20 border-y border-border/50">
+    <section id="roadmap" className="py-24 relative bg-[#080B11] border-y border-[#1E293B]">
       <div className="container mx-auto px-4">
         <SectionHeader 
-          badge="Journey"
+          badge="Milestones"
           title="Development Roadmap"
-          description="NexusAI project milestones and ongoing evolution toward Enterprise."
+          description="NexusAI architectural progress and evolution toward enterprise-grade RAG."
         />
         
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
@@ -25,44 +25,50 @@ export function Roadmap() {
 
             return (
               <AnimatedContainer key={i} variants={staggerChild} className="flex">
-                <Card className={`relative flex flex-col justify-between w-full glass transition-all duration-300 ${
+                <div className={`relative flex flex-col justify-between w-full rounded-2xl transition-all duration-300 ${
                   isCurrent
-                    ? 'border-indigo-500 bg-indigo-950/20 shadow-2xl shadow-indigo-500/10 glow-primary scale-[1.02] z-10'
+                    ? 'border-2 border-indigo-500 bg-[#0E131F] shadow-2xl shadow-indigo-600/15 glow-primary scale-[1.02] z-10'
                     : isCompleted
-                    ? 'border-emerald-500/30 bg-zinc-900/30'
-                    : 'border-zinc-800 bg-zinc-950/40 opacity-80'
+                    ? 'border border-[#1E293B] bg-[#0E131F]'
+                    : 'border border-[#1E293B]/60 bg-[#0E131F]/50 opacity-75'
                 }`}>
-                  <CardHeader className="p-6 pb-4">
+                  {isCurrent && (
+                    <div className="absolute -top-3 left-6 rounded-full bg-indigo-600 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-md shadow-indigo-600/30">
+                      Active Development
+                    </div>
+                  )}
+
+                  <div className="p-6 pb-4">
                     <div className="flex items-center justify-between gap-2 mb-3">
                       <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                         {phase.phase}
                       </span>
                       {isCompleted && (
-                        <Badge variant="outline" className="border-emerald-500/40 bg-emerald-500/10 text-emerald-400 gap-1.5 text-[11px] font-semibold px-2.5 py-0.5">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 border border-emerald-500/20">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           COMPLETED
-                        </Badge>
+                        </span>
                       )}
                       {isCurrent && (
-                        <Badge variant="default" className="bg-indigo-600 hover:bg-indigo-500 text-white gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 shadow-md shadow-indigo-600/30 animate-pulse">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-[11px] font-bold text-indigo-300 border border-indigo-500/30">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" />
                           IN PROGRESS
-                        </Badge>
+                        </span>
                       )}
                       {isPlanned && (
-                        <Badge variant="outline" className="border-zinc-700 bg-zinc-800/40 text-zinc-400 gap-1.5 text-[11px] font-semibold px-2.5 py-0.5">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-800/40 px-2.5 py-0.5 text-[11px] font-semibold text-zinc-400 border border-[#1E293B]">
                           <Clock className="w-3.5 h-3.5" />
                           PLANNED
-                        </Badge>
+                        </span>
                       )}
                     </div>
 
-                    <CardTitle className={`text-lg font-bold leading-tight ${isCurrent ? 'text-white' : 'text-zinc-200'}`}>
+                    <h3 className={`text-lg font-bold leading-tight ${isCurrent ? 'text-white' : 'text-zinc-200'}`}>
                       {phase.title}
-                    </CardTitle>
-                  </CardHeader>
+                    </h3>
+                  </div>
 
-                  <CardContent className="p-6 pt-0 flex-1">
+                  <div className="p-6 pt-0 flex-1">
                     <ul className="space-y-2.5 mt-2">
                       {phase.items.map((item, j) => (
                         <li key={j} className="flex items-start gap-2.5 text-xs">
@@ -79,8 +85,8 @@ export function Roadmap() {
                         </li>
                       ))}
                     </ul>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </AnimatedContainer>
             );
           })}

@@ -28,39 +28,38 @@ const CAPABILITIES = [
 
 export function AiCapabilities() {
   return (
-    <section className="py-24 relative bg-card/20 border-y border-border/50">
+    <section className="py-24 relative bg-[#080B11]">
       <div className="container mx-auto px-4">
         <SectionHeader 
           badge="Intelligence"
           title="AI-Powered Capabilities"
-          description="State-of-the-art AI models combined with advanced vector search."
+          description="State-of-the-art AI models combined with advanced FAISS vector search."
         />
         
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {CAPABILITIES.map((cap, i) => {
             const Icon = cap.icon;
             return (
               <AnimatedContainer key={i} variants={staggerChild}>
-                <Card className="h-full glass relative overflow-hidden group border-border hover:border-accent/50 transition-colors">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-accent/10 transition-colors"></div>
-                  <CardHeader>
-                    <Icon className="w-8 h-8 text-accent mb-4" />
-                    <CardTitle className="text-2xl">{cap.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-6 leading-relaxed">
+                <div className="h-full rounded-2xl border border-[#1E293B] bg-[#0E131F] p-6 hover:border-indigo-500/40 hover:bg-[#141B2D] transition-all duration-300 flex flex-col justify-between shadow-sm">
+                  <div>
+                    <div className="h-12 w-12 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center mb-4">
+                      <Icon className="w-6 h-6 text-indigo-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">{cap.title}</h3>
+                    <p className="text-xs text-zinc-400 mb-6 leading-relaxed">
                       {cap.description}
                     </p>
-                    <ul className="space-y-3">
-                      {cap.bullets.map((bullet, j) => (
-                        <li key={j} className="flex items-start gap-2">
-                          <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
-                          <span className="text-sm text-foreground/80">{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
+                  </div>
+                  <ul className="space-y-2.5 border-t border-[#1E293B] pt-4">
+                    {cap.bullets.map((bullet, j) => (
+                      <li key={j} className="flex items-start gap-2 text-xs">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-zinc-300">{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </AnimatedContainer>
             );
           })}

@@ -1,71 +1,275 @@
 "use client";
 
-import { ArrowRight, GitBranch, Upload, MessageSquare } from "lucide-react";
+import React, { useState } from "react";
+import { ArrowRight, GitBranch, Upload, FileText, Database, Search, Bot, CheckCircle2, Sparkles, Layers, ShieldCheck, Cpu } from "lucide-react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AnimatedContainer, StaggerContainer, staggerChild } from "@/components/shared/animated-container";
-import { GradientBlob } from "@/components/shared/gradient-blob";
 
 export function Hero() {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const shouldReduceMotion = useReducedMotion();
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (shouldReduceMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setMousePos({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos({ x: 0, y: 0 });
+  };
+
   return (
-    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-      <GradientBlob color="primary" size="lg" className="-top-24 -left-24 opacity-50" />
-      <GradientBlob color="accent" size="lg" className="top-32 -right-24 opacity-50 animation-delay-2000" />
+    <section className="relative pt-28 pb-20 md:pt-36 md:pb-28 overflow-hidden bg-[#080B11]">
+      {/* Background Holographic Atmosphere */}
+      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 right-1/4 w-[450px] h-[350px] bg-purple-600/10 blur-[140px] rounded-full pointer-events-none" />
 
-      <div className="container mx-auto px-4 relative z-10 text-center">
-        <StaggerContainer className="max-w-4xl mx-auto flex flex-col items-center">
-          <AnimatedContainer variants={staggerChild}>
-            <Badge variant="outline" className="mb-6 px-4 py-1.5 text-sm bg-background/50 backdrop-blur-sm border-primary/20 text-primary">
-              <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
-              NexusAI Production RAG Engine Live
-            </Badge>
-          </AnimatedContainer>
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          {/* LEFT SIDE: Split Headline, Meta & CTAs (Cols 1-6) */}
+          <div className="lg:col-span-6 flex flex-col items-start text-left space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Badge variant="outline" className="px-3.5 py-1 text-xs font-semibold bg-[#0E131F] border-[#1E293B] text-indigo-400 gap-2">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="font-mono">NexusAI Engine Active</span>
+                <span className="text-zinc-600">•</span>
+                <span className="text-zinc-400 font-mono">FAISS 3072d</span>
+              </Badge>
+            </motion.div>
 
-          <AnimatedContainer variants={staggerChild}>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 leading-[1.1]">
-              Your Knowledge, <br className="hidden md:block" />
-              <span className="text-gradient">Supercharged by AI</span>
-            </h1>
-          </AnimatedContainer>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.12] text-white"
+            >
+              Turn Your Documents Into an <br />
+              <span className="text-gradient-accent">Intelligent Knowledge Base</span>
+            </motion.h1>
 
-          <AnimatedContainer variants={staggerChild}>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-              Enterprise-grade AI Knowledge Workspace powered by Retrieval-Augmented Generation. Upload documents, generate vector embeddings, and query grounded answers with Gemini.
-            </p>
-          </AnimatedContainer>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed"
+            >
+              Upload documents, generate vector embeddings, and ask questions with grounded AI answers backed by verified source citations and similarity scores.
+            </motion.p>
 
-          <AnimatedContainer variants={staggerChild} className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
-            <Button asChild size="lg" className="gap-2 text-base h-12 px-8 w-full sm:w-auto group bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-600/25">
-              <Link href="/dashboard">
-                Open Workspace
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto"
+            >
+              <Button asChild size="lg" className="h-12 px-7 text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition-all">
+                <Link href="/dashboard">
+                  <span>Open Workspace</span>
+                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              </Button>
 
-            <Button asChild size="lg" variant="outline" className="gap-2 text-base h-12 px-6 w-full sm:w-auto border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-200">
-              <Link href="/documents">
-                <Upload className="w-4 h-4 text-emerald-400" />
-                Upload Document
-              </Link>
-            </Button>
+              <Button asChild size="lg" variant="outline" className="h-12 px-6 text-sm font-semibold border-[#1E293B] bg-[#0E131F] hover:bg-[#141B2D] text-zinc-200 hover:text-white transition-all">
+                <Link href="/documents">
+                  <Upload className="mr-2 w-4 h-4 text-emerald-400" />
+                  <span>Upload Document</span>
+                </Link>
+              </Button>
 
-            <Button asChild size="lg" variant="outline" className="gap-2 text-base h-12 px-6 w-full sm:w-auto border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-200">
-              <Link href="/chat">
-                <MessageSquare className="w-4 h-4 text-purple-400" />
-                Start RAG Chat
-              </Link>
-            </Button>
+              <Button asChild size="lg" variant="ghost" className="h-12 px-4 text-sm font-medium text-zinc-400 hover:text-white hover:bg-[#0E131F]">
+                <Link href="https://github.com/Ganu39/NexusAI" target="_blank" rel="noreferrer">
+                  <GitBranch className="mr-1.5 w-4 h-4" />
+                  <span>View on GitHub ↗</span>
+                </Link>
+              </Button>
+            </motion.div>
 
-            <Button asChild size="lg" variant="ghost" className="gap-2 text-base h-12 px-4 w-full sm:w-auto text-zinc-400 hover:text-white">
-              <Link href="https://github.com/Ganu39/NexusAI" target="_blank" rel="noreferrer">
-                <GitBranch className="w-4 h-4" />
-                View on GitHub ↗
-              </Link>
-            </Button>
-          </AnimatedContainer>
-        </StaggerContainer>
+            {/* Quick architectural capability tags */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex flex-wrap items-center gap-4 text-xs font-mono text-zinc-500 pt-3 border-t border-[#1E293B]/70 w-full"
+            >
+              <div className="flex items-center gap-1.5 text-zinc-300">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Deterministic Grounding</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-zinc-300">
+                <Layers className="w-3.5 h-3.5 text-indigo-400" />
+                <span>FAISS Indexing</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-zinc-300">
+                <Bot className="w-3.5 h-3.5 text-purple-400" />
+                <span>Gemini 2.5 Flash</span>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* RIGHT SIDE: Interactive 3D Knowledge Visualization Canvas (Cols 7-12) */}
+          <div
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            className="lg:col-span-6 perspective-[1200px]"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 25 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              style={{
+                transform: shouldReduceMotion
+                  ? "none"
+                  : `rotateX(${mousePos.y * -10}deg) rotateY(${mousePos.x * 12}deg)`,
+                transformStyle: "preserve-3d",
+                transition: "transform 0.15s ease-out",
+              }}
+              className="relative rounded-3xl border border-[#1E293B] bg-[#0E131F]/90 p-6 sm:p-8 shadow-2xl backdrop-blur-md overflow-hidden glow-primary"
+            >
+              {/* Header Status of 3D Canvas */}
+              <div className="flex items-center justify-between border-b border-[#1E293B] pb-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 font-mono">
+                    RAG Knowledge Visualization
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-indigo-400 bg-[#141B2D] px-2 py-0.5 rounded border border-[#1E293B]">
+                  Spatial Node Flow
+                </span>
+              </div>
+
+              {/* 3D Spatial Knowledge Playground */}
+              <div className="relative min-h-[340px] sm:min-h-[380px] flex items-center justify-center">
+                {/* Orbital Background Rings */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] rounded-full border border-indigo-500/15 border-dashed animate-[spin_40s_linear_infinite]" />
+                  <div className="w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] rounded-full border border-purple-500/20 animate-[spin_25s_linear_infinite_reverse]" />
+                </div>
+
+                {/* 1. TOP NODE: 📄 Document Ingestion */}
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ transform: "translateZ(45px)" }}
+                  className="absolute top-1 left-2 sm:top-2 sm:left-4 z-20"
+                >
+                  <div className="flex items-center gap-2.5 rounded-xl border border-[#1E293B] bg-[#141B2D]/95 p-3 shadow-lg hover:border-indigo-500/50 transition-all">
+                    <FileText className="h-4 w-4 text-indigo-400" />
+                    <div>
+                      <div className="text-xs font-bold text-white font-mono">Architecture.pdf</div>
+                      <div className="text-[9px] text-zinc-400">PDF • 1.4 MB • 6 Pages</div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* 2. TOP-RIGHT NODE: 🔹 Chunking & Embeddings */}
+                <motion.div
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                  style={{ transform: "translateZ(40px)" }}
+                  className="absolute top-1 right-2 sm:top-2 sm:right-4 z-20"
+                >
+                  <div className="flex items-center gap-2.5 rounded-xl border border-[#1E293B] bg-[#141B2D]/95 p-3 shadow-lg hover:border-purple-500/50 transition-all">
+                    <Database className="h-4 w-4 text-purple-400" />
+                    <div>
+                      <div className="text-xs font-bold text-white font-mono">Vector Embeddings</div>
+                      <div className="text-[9px] text-purple-300">Gemini 3072d • FAISS</div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* 3. CENTER: ✦ NEXUSAI AI CORE ✦ */}
+                <motion.div
+                  animate={{
+                    y: [0, -4, 0],
+                    scale: [1, 1.03, 1],
+                  }}
+                  transition={{
+                    duration: 3.8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  style={{ transform: "translateZ(65px)" }}
+                  className="relative z-30 flex flex-col items-center justify-center"
+                >
+                  <div className="relative flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-indigo-400 p-0.5 shadow-2xl shadow-indigo-600/35">
+                    <div className="flex h-full w-full flex-col items-center justify-center rounded-[14px] bg-[#080B11] border border-indigo-400/40 p-2 text-center">
+                      <Sparkles className="h-6 w-6 text-indigo-400 animate-pulse mb-1" />
+                      <span className="text-[9px] font-extrabold uppercase tracking-wider text-white">
+                        NexusAI
+                      </span>
+                      <span className="text-[7px] font-mono text-indigo-300">
+                        RAG Core
+                      </span>
+                    </div>
+                    {/* Orbiting pulse particle */}
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 h-2.5 w-2.5 rounded-full bg-indigo-400 shadow-md shadow-indigo-400 animate-ping" />
+                  </div>
+                </motion.div>
+
+                {/* 4. BOTTOM-LEFT NODE: 🔍 Semantic Retrieval */}
+                <motion.div
+                  animate={{ y: [0, 5, 0] }}
+                  transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+                  style={{ transform: "translateZ(35px)" }}
+                  className="absolute bottom-1 left-2 sm:bottom-2 sm:left-4 z-20"
+                >
+                  <div className="flex items-center gap-2.5 rounded-xl border border-[#1E293B] bg-[#141B2D]/95 p-3 shadow-lg hover:border-blue-500/50 transition-all">
+                    <Search className="h-4 w-4 text-blue-400" />
+                    <div>
+                      <div className="text-xs font-bold text-white font-mono">Semantic Retrieval</div>
+                      <div className="text-[9px] text-zinc-400">Cosine Top-K Chunks</div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* 5. BOTTOM-RIGHT NODE: ✓ Grounded Answer & Citations */}
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 5.2, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
+                  style={{ transform: "translateZ(50px)" }}
+                  className="absolute bottom-1 right-2 sm:bottom-2 sm:right-4 z-20"
+                >
+                  <div className="flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-[#141B2D]/95 p-3 shadow-lg hover:border-emerald-500/60 transition-all">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    <div>
+                      <div className="text-xs font-bold text-white font-mono">Grounded Answer</div>
+                      <div className="text-[9px] text-emerald-300">Page 6 • 96.4% Match</div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* SVG 3D Connecting Beams */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 stroke-[#1E293B] stroke-[1.5]">
+                  <line x1="25%" y1="20%" x2="50%" y2="50%" strokeDasharray="4 4" className="stroke-indigo-500/40" />
+                  <line x1="75%" y1="20%" x2="50%" y2="50%" strokeDasharray="4 4" className="stroke-purple-500/40" />
+                  <line x1="25%" y1="80%" x2="50%" y2="50%" strokeDasharray="4 4" className="stroke-blue-500/40" />
+                  <line x1="75%" y1="80%" x2="50%" y2="50%" strokeDasharray="4 4" className="stroke-emerald-500/40" />
+                </svg>
+              </div>
+
+              {/* Footer Indicator on Canvas */}
+              <div className="mt-4 flex items-center justify-between border-t border-[#1E293B] pt-3 text-[10px] font-mono text-zinc-500">
+                <span className="flex items-center gap-1 text-zinc-400">
+                  <Cpu className="w-3 h-3 text-indigo-400" />
+                  <span>3072d Dimension Space</span>
+                </span>
+                <span className="text-emerald-400 font-semibold">100% Deterministic Grounding</span>
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
+

@@ -6,7 +6,7 @@ import { AnimatedContainer, StaggerContainer, staggerChild } from "@/components/
 
 export function ProductActions() {
   return (
-    <section className="py-16 relative border-y border-zinc-800/80 bg-zinc-950/80">
+    <section className="py-20 relative border-y border-[#1E293B] bg-[#080B11]">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-400 border border-indigo-500/20">
@@ -14,7 +14,7 @@ export function ProductActions() {
             <span>Interactive Workflows</span>
           </div>
           <h2 className="text-3xl font-bold text-white tracking-tight">
-            Explore NexusAI Features
+            Explore NexusAI Workflows
           </h2>
           <p className="text-sm text-zinc-400">
             Direct access to core document intelligence workflows powered by Gemini 2.5 Flash and local FAISS vector store.
@@ -24,14 +24,14 @@ export function ProductActions() {
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Card 1: Documents */}
           <AnimatedContainer variants={staggerChild}>
-            <div className="group flex flex-col justify-between h-full rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 hover:border-emerald-500/40 hover:bg-zinc-900/80 transition-all duration-300">
+            <div className="group flex flex-col justify-between h-full rounded-2xl border border-[#1E293B] bg-[#0E131F] p-6 hover:border-emerald-500/40 hover:bg-[#141B2D] transition-all duration-300">
               <div className="space-y-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   <FileText className="h-6 w-6" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">
-                    Document Management
+                    Document Repository
                   </h3>
                   <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
                     Upload PDF, TXT, and DOCX files. Extract structured text and organize your document repository.
@@ -53,7 +53,7 @@ export function ProductActions() {
 
           {/* Card 2: RAG Chat */}
           <AnimatedContainer variants={staggerChild}>
-            <div className="group flex flex-col justify-between h-full rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 hover:border-purple-500/40 hover:bg-zinc-900/80 transition-all duration-300">
+            <div className="group flex flex-col justify-between h-full rounded-2xl border border-[#1E293B] bg-[#0E131F] p-6 hover:border-purple-500/40 hover:bg-[#141B2D] transition-all duration-300">
               <div className="space-y-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
                   <MessageSquare className="h-6 w-6" />
@@ -82,7 +82,7 @@ export function ProductActions() {
 
           {/* Card 3: Dashboard */}
           <AnimatedContainer variants={staggerChild}>
-            <div className="group flex flex-col justify-between h-full rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 hover:border-indigo-500/40 hover:bg-zinc-900/80 transition-all duration-300">
+            <div className="group flex flex-col justify-between h-full rounded-2xl border border-[#1E293B] bg-[#0E131F] p-6 hover:border-indigo-500/40 hover:bg-[#141B2D] transition-all duration-300">
               <div className="space-y-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                   <LayoutDashboard className="h-6 w-6" />

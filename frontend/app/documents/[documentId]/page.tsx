@@ -131,29 +131,29 @@ export default function DocumentDetailPage({ params }: PageParams) {
   return (
     <AppShell
       title={doc ? doc.filename : "Document Details"}
-      description={`Document ID: ${documentId}`}
+      description={`UUID: ${documentId}`}
       action={
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/documents"
-            className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white"
+            className="flex items-center gap-2 rounded-xl border border-[#1E293B] bg-[#0E131F] px-3.5 py-2 text-xs font-medium text-zinc-300 hover:bg-[#141B2D] hover:text-white transition-all"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to Documents</span>
+            <span>Back to Repository</span>
           </Link>
           <Link
             href="/chat"
-            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-500"
+            className="flex items-center gap-2 rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-500 transition-all"
           >
             <MessageSquare className="h-4 w-4" />
-            <span>Ask about Document</span>
+            <span>Ask in RAG Chat</span>
           </Link>
           {doc && (
             <>
               <button
                 onClick={handleIndex}
                 disabled={indexing || deleting}
-                className="flex items-center gap-2 rounded-lg border border-indigo-500/20 bg-indigo-600/10 px-4 py-2 text-sm font-semibold text-indigo-300 hover:bg-indigo-600/20 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-xl border border-indigo-500/20 bg-indigo-600/10 px-3.5 py-2 text-xs font-semibold text-indigo-300 hover:bg-indigo-600/20 disabled:opacity-50 transition-all"
               >
                 {indexing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -165,7 +165,7 @@ export default function DocumentDetailPage({ params }: PageParams) {
               <button
                 onClick={handleDelete}
                 disabled={deleting || indexing}
-                className="flex items-center gap-2 rounded-lg border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-300 hover:bg-rose-500/20 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3.5 py-2 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 disabled:opacity-50 transition-all"
               >
                 {deleting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -182,70 +182,71 @@ export default function DocumentDetailPage({ params }: PageParams) {
       {loading ? (
         <div className="flex flex-col items-center justify-center p-16 space-y-3">
           <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
-          <p className="text-sm text-zinc-400">Loading document details...</p>
+          <p className="text-xs text-zinc-400">Loading document metadata...</p>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-rose-500/20 bg-rose-500/10 p-12 text-center text-rose-300 space-y-4">
           <AlertCircle className="h-10 w-10 text-rose-400" />
           <div>
-            <h3 className="text-lg font-semibold text-rose-200">
+            <h3 className="text-base font-semibold text-rose-200">
               Document Error
             </h3>
             <p className="mt-1 text-xs text-rose-300/80">{error}</p>
           </div>
           <Link
             href="/documents"
-            className="rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-500"
+            className="rounded-xl bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-500"
           >
             Return to Documents
           </Link>
         </div>
       ) : doc ? (
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Header Card */}
-          <div className="flex items-start justify-between rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 md:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[#1E293B] bg-[#0E131F] p-6 shadow-sm">
             <div className="flex items-start gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shrink-0">
-                <FileText className="h-7 w-7" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600/15 text-indigo-400 border border-indigo-500/30 shrink-0">
+                <FileText className="h-6 w-6" />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-bold text-white">{doc.filename}</h2>
-                  <span className="rounded bg-zinc-800 px-2 py-0.5 text-xs font-semibold text-zinc-300 uppercase">
+                  <h2 className="text-lg font-bold text-white truncate max-w-[280px] sm:max-w-lg">{doc.filename}</h2>
+                  <span className="rounded-lg bg-[#141B2D] border border-[#1E293B] px-2 py-0.5 text-[10px] font-semibold text-zinc-300 uppercase">
                     {doc.file_type}
                   </span>
                 </div>
-                <p className="text-xs font-mono text-zinc-500">
-                  ID: {doc.document_id}
+                <p className="text-[11px] font-mono text-zinc-500">
+                  Document ID: {doc.document_id}
                 </p>
               </div>
             </div>
 
-            {indexResult ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-500/10 px-3 py-1 text-xs font-medium text-purple-300 border border-purple-500/20">
-                <Sparkles className="h-3.5 w-3.5 text-purple-400" />
-                Indexed ({indexResult.chunks} Chunks)
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                Uploaded & Ingested
-              </span>
-            )}
+            <div>
+              {indexResult ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-500/10 px-3 py-1 text-xs font-medium text-purple-300 border border-purple-500/20">
+                  <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+                  Indexed ({indexResult.chunks} Chunks, {indexResult.embeddings} Vectors)
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Uploaded & Ingested
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Index Result Banner */}
           {indexResult && (
-            <div className="flex items-center gap-3 rounded-xl border border-purple-500/20 bg-purple-500/10 p-4 text-purple-300 text-sm">
+            <div className="flex items-center gap-3 rounded-2xl border border-purple-500/20 bg-purple-500/10 p-4 text-purple-300 text-xs">
               <Sparkles className="h-5 w-5 text-purple-400 shrink-0" />
               <div>
                 <p className="font-semibold text-purple-200">
                   Document Vector Embeddings Generated Successfully!
                 </p>
-                <p className="text-xs text-purple-300/80 mt-0.5">
-                  Created {indexResult.chunks} page-aware text chunks and{" "}
-                  {indexResult.embeddings} Gemini vector embeddings in local FAISS
-                  index.
+                <p className="text-zinc-400 mt-0.5">
+                  Generated {indexResult.chunks} page-aware semantic text chunks and{" "}
+                  {indexResult.embeddings} Gemini 3072d vector embeddings in local FAISS store.
                 </p>
               </div>
             </div>
@@ -253,7 +254,7 @@ export default function DocumentDetailPage({ params }: PageParams) {
 
           {/* Metadata Grid */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-5 space-y-2">
+            <div className="rounded-2xl border border-[#1E293B] bg-[#0E131F] p-5 space-y-2 shadow-sm">
               <div className="flex items-center gap-2 text-xs text-zinc-500">
                 <HardDrive className="h-4 w-4 text-emerald-400" />
                 <span>File Size</span>
@@ -263,7 +264,7 @@ export default function DocumentDetailPage({ params }: PageParams) {
               </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-5 space-y-2">
+            <div className="rounded-2xl border border-[#1E293B] bg-[#0E131F] p-5 space-y-2 shadow-sm">
               <div className="flex items-center gap-2 text-xs text-zinc-500">
                 <Layers className="h-4 w-4 text-purple-400" />
                 <span>Page Count</span>
@@ -273,7 +274,7 @@ export default function DocumentDetailPage({ params }: PageParams) {
               </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-5 space-y-2">
+            <div className="rounded-2xl border border-[#1E293B] bg-[#0E131F] p-5 space-y-2 shadow-sm">
               <div className="flex items-center gap-2 text-xs text-zinc-500">
                 <FileCode className="h-4 w-4 text-amber-400" />
                 <span>Character Count</span>
@@ -283,29 +284,29 @@ export default function DocumentDetailPage({ params }: PageParams) {
               </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-5 space-y-2">
+            <div className="rounded-2xl border border-[#1E293B] bg-[#0E131F] p-5 space-y-2 shadow-sm">
               <div className="flex items-center gap-2 text-xs text-zinc-500">
                 <Calendar className="h-4 w-4 text-indigo-400" />
-                <span>Uploaded Date</span>
+                <span>Ingestion Timestamp</span>
               </div>
-              <div className="text-sm font-semibold text-white">
+              <div className="text-xs font-semibold text-white">
                 {formatDate(doc.created_at)}
               </div>
             </div>
           </div>
 
           {/* System Info Card */}
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/20 p-6 space-y-3">
-            <h3 className="text-sm font-bold text-zinc-300 flex items-center gap-2">
+          <div className="rounded-2xl border border-[#1E293B] bg-[#0E131F] p-6 space-y-3 shadow-sm">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
               <Shield className="h-4 w-4 text-indigo-400" />
-              <span>Document Processing Information</span>
+              <span>Document Processing Architecture</span>
             </h3>
-            <div className="text-xs text-zinc-400 space-y-1">
+            <div className="text-xs text-zinc-400 space-y-1.5 leading-relaxed">
               <p>
-                • Structured text extraction completed preserving page boundaries.
+                • Structured text extraction completed preserving page boundaries and chunk indices.
               </p>
               <p>
-                • Full document text is safely stored in backend isolated storage.
+                • Full document text safely stored in backend isolated storage for deterministic context recovery.
               </p>
               <p>
                 • Vector embeddings generated via Gemini (`models/gemini-embedding-001`) and indexed in FAISS vector store.

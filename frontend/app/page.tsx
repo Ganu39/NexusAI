@@ -2,6 +2,7 @@ import { Navbar } from "@/components/landing/navbar";
 import { Hero } from "@/components/landing/hero";
 import { ProductActions } from "@/components/landing/product-actions";
 import { TrustedTech } from "@/components/landing/trusted-tech";
+import { AssistantShowcase } from "@/components/landing/assistant-showcase";
 import { Features } from "@/components/landing/features";
 import { ProductPreview } from "@/components/landing/product-preview";
 import { HowItWorks } from "@/components/landing/how-it-works";
@@ -21,8 +22,9 @@ export default function Home() {
         <ProductActions />
         <TrustedTech />
         <Features />
-        <ProductPreview />
         <HowItWorks />
+        <AssistantShowcase />
+        <ProductPreview />
         <AiCapabilities />
         <WhyNexusAi />
         <Roadmap />

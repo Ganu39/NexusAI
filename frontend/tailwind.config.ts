@@ -10,30 +10,46 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#030712",
-        foreground: "#ffffff",
+        canvas: "#080B11",
+        background: "#080B11",
+        foreground: "#F8FAFC",
+        surface: {
+          DEFAULT: "#0E131F",
+          secondary: "#141B2D",
+        },
         card: {
-          DEFAULT: "#111827",
-          foreground: "#ffffff",
+          DEFAULT: "#0E131F",
+          foreground: "#F8FAFC",
         },
         primary: {
-          DEFAULT: "#7C3AED",
+          DEFAULT: "#6366F1",
           foreground: "#ffffff",
+          50: "#EEF2FF",
+          100: "#E0E7FF",
+          400: "#818CF8",
+          500: "#6366F1",
+          600: "#4F46E5",
+          700: "#4338CA",
         },
         secondary: {
-          DEFAULT: "#2563EB",
+          DEFAULT: "#8B5CF6",
           foreground: "#ffffff",
+          400: "#A78BFA",
+          500: "#8B5CF6",
         },
         accent: {
-          DEFAULT: "#06B6D4",
+          DEFAULT: "#6366F1",
           foreground: "#ffffff",
         },
         muted: {
-          DEFAULT: "#1e293b",
-          foreground: "#94a3b8",
+          DEFAULT: "#141B2D",
+          foreground: "#94A3B8",
         },
-        border: "#1e293b",
-        ring: "#7C3AED",
+        border: "#1E293B",
+        ring: "#6366F1",
+        success: "#10B981",
+        warning: "#F59E0B",
+        destructive: "#F43F5E",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],

@@ -6,40 +6,41 @@ import { Check, X } from "lucide-react";
 
 export function WhyNexusAi() {
   return (
-    <section className="py-24 relative">
+    <section className="py-24 relative bg-[#080B11] border-y border-[#1E293B]">
       <div className="container mx-auto px-4">
         <SectionHeader 
-          title="Why choose NexusAI?"
-          description="See how a dedicated AI Knowledge Workspace compares to traditional tools."
+          badge="Comparison"
+          title="Why Choose NexusAI?"
+          description="See how a dedicated enterprise AI Knowledge Workspace compares to generic search and chat tools."
         />
         
         <AnimatedContainer animation="fade" delay={0.2} className="max-w-4xl mx-auto overflow-x-auto">
-          <div className="min-w-[700px]">
-            <div className="grid grid-cols-4 gap-4 pb-4 border-b border-border text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          <div className="min-w-[700px] rounded-2xl border border-[#1E293B] bg-[#0E131F] p-6 shadow-sm">
+            <div className="grid grid-cols-4 gap-4 pb-4 border-b border-[#1E293B] text-xs font-bold text-zinc-400 uppercase tracking-wider">
               <div className="col-span-1">Capability</div>
-              <div className="col-span-1 text-center">Traditional Search</div>
-              <div className="col-span-1 text-center">Standard ChatGPT</div>
-              <div className="col-span-1 text-center text-primary glow-primary-text">NexusAI</div>
+              <div className="col-span-1 text-center">Keyword Search</div>
+              <div className="col-span-1 text-center">Standard Chatbots</div>
+              <div className="col-span-1 text-center text-indigo-400">NexusAI RAG</div>
             </div>
             
             {[
-              { label: "Semantic Understanding", t: false, c: true, n: true },
-              { label: "Grounding in Private Data", t: true, c: false, n: true },
-              { label: "Automatic Citations", t: false, c: false, n: true },
-              { label: "Privacy & Data Control", t: true, c: false, n: true },
-              { label: "Multi-document Synthesis", t: false, c: false, n: true },
-              { label: "Enterprise RBAC", t: true, c: false, n: true },
+              { label: "Semantic Vector Search (FAISS)", t: false, c: false, n: true },
+              { label: "Grounding in Private Documents", t: true, c: false, n: true },
+              { label: "Explicit Page & Score Citations", t: false, c: false, n: true },
+              { label: "Multi-Format Parsing (PDF/TXT/DOCX)", t: true, c: false, n: true },
+              { label: "Strict Prompt Injection Defenses", t: false, c: false, n: true },
+              { label: "Isolated Backend Persistence", t: true, c: false, n: true },
             ].map((row, i) => (
-              <div key={i} className={`grid grid-cols-4 gap-4 py-4 border-b border-border/50 ${i % 2 === 0 ? 'bg-card/20' : ''} rounded-lg px-2 items-center`}>
-                <div className="col-span-1 font-medium text-foreground">{row.label}</div>
+              <div key={i} className={`grid grid-cols-4 gap-4 py-3.5 border-b border-[#1E293B]/60 ${i % 2 === 0 ? 'bg-[#141B2D]/40' : ''} rounded-xl px-3 items-center text-xs`}>
+                <div className="col-span-1 font-medium text-white">{row.label}</div>
                 <div className="col-span-1 flex justify-center">
-                  {row.t ? <Check className="w-5 h-5 text-muted-foreground" /> : <X className="w-5 h-5 text-muted-foreground/30" />}
+                  {row.t ? <Check className="w-4 h-4 text-zinc-400" /> : <X className="w-4 h-4 text-zinc-600" />}
                 </div>
                 <div className="col-span-1 flex justify-center">
-                  {row.c ? <Check className="w-5 h-5 text-muted-foreground" /> : <X className="w-5 h-5 text-muted-foreground/30" />}
+                  {row.c ? <Check className="w-4 h-4 text-zinc-400" /> : <X className="w-4 h-4 text-zinc-600" />}
                 </div>
-                <div className="col-span-1 flex justify-center bg-primary/10 py-2 rounded-md border border-primary/20">
-                  {row.n ? <Check className="w-5 h-5 text-primary" /> : <X className="w-5 h-5 text-muted-foreground/30" />}
+                <div className="col-span-1 flex justify-center bg-indigo-600/15 py-1.5 rounded-lg border border-indigo-500/30">
+                  {row.n ? <Check className="w-4 h-4 text-indigo-400 font-bold" /> : <X className="w-4 h-4 text-zinc-600" />}
                 </div>
               </div>
             ))}

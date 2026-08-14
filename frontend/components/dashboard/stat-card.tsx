@@ -42,19 +42,19 @@ export function StatCard({
   const style = colorMap[color] || colorMap.indigo;
 
   return (
-    <div className="flex flex-col justify-between rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm">
+    <div className="flex flex-col justify-between rounded-2xl border border-[#1E293B] bg-[#0E131F] p-5 shadow-sm">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
           {title}
         </span>
         <div
-          className={`flex h-9 w-9 items-center justify-center rounded-lg ${style.bg} ${style.text} border ${style.border}`}
+          className={`flex h-9 w-9 items-center justify-center rounded-xl ${style.bg} ${style.text} border ${style.border}`}
         >
-          <Icon className="h-5 w-5" />
+          <Icon className="h-4 w-4" />
         </div>
       </div>
       <div className="mt-4">
-        <div className="text-2xl font-bold tracking-tight text-white md:text-3xl">
+        <div className="text-2xl font-bold tracking-tight text-white md:text-3xl font-mono">
           {value}
         </div>
         {subtitle && (
