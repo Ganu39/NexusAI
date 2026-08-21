@@ -25,7 +25,15 @@ def test_metrics_endpoint():
     assert "total_documents" in data
 
 
-def test_ask_stream_endpoint():
+@patch(
+    "services.embedding.GeminiEmbeddingProvider.__init__",
+    return_value=None,
+)
+@patch("services.llm.GeminiLLMProvider.__init__", return_value=None)
+@patch("services.rag.RAGService.answer_question_stream")
+def test_ask_stream_endpoint(
+    mock_answer_stream, mock_llm_init, mock_embed_init
+):
     """Verify POST /api/v1/ask/stream returns Server-Sent Events stream."""
     mock_sources = []
     mock_tokens = ["Hello", " ", "world!"]
@@ -34,14 +42,13 @@ def test_ask_stream_endpoint():
         for t in mock_tokens:
             yield t
 
-    with patch("services.rag.RAGService.answer_question_stream") as mock:
-        mock.return_value = (mock_sources, True, mock_gen())
+    mock_answer_stream.return_value = (mock_sources, True, mock_gen())
 
-        payload = {"question": "What is NexusAI?", "top_k": 3}
-        response = client.post("/api/v1/ask/stream", json=payload)
+    payload = {"question": "What is NexusAI?", "top_k": 3}
+    response = client.post("/api/v1/ask/stream", json=payload)
 
-        assert response.status_code == 200
-        assert "text/event-stream" in response.headers["content-type"]
-        body = response.text
-        assert "event" in body
-        assert "metadata" in body
+    assert response.status_code == 200
+    assert "text/event-stream" in response.headers["content-type"]
+    body = response.text
+    assert "event" in body
+    assert "metadata" in body
