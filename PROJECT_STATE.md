@@ -1,10 +1,12 @@
 # NexusAI Project State
 
-**Current Phase:** Phase 5 — Advanced Infrastructure
-**Status:** IN PROGRESS
-**Latest Stable Release:** v0.4.0
+**Current Phase:** Phase 5 — Advanced Infrastructure & Scale
+**Status:** COMPLETED (100%)
+**Latest Stable Release:** v0.5.0
 **Production Frontend:** https://nexusai-sage-beta.vercel.app/
 **Production Backend:** https://nexusai-1xq9.onrender.com
+
+---
 
 ## Completed Phases
 
@@ -42,22 +44,10 @@
 - Document search, file-type filtering (`PDF`, `TXT`, `DOCX`), sorting, and re-indexing.
 - 54 Pytest unit tests, 0 Flake8 errors, 0 ESLint errors, and clean Next.js production build.
 
----
-
-## Current Phase
-
-### 🛠️ Phase 5: Advanced Infrastructure (IN PROGRESS)
-- Cloud vector database integration (Pinecone / Qdrant).
-- Automated FAISS index compaction & rebuilding.
-- Live answer streaming via Server-Sent Events (SSE).
-- User authentication, multi-tenancy, and Role-Based Access Control (RBAC).
-
----
-
-## Upcoming Phases
-
-### ⏳ Phase 5: Production Scale & Cloud Vector Store
-- Cloud vector database integration (Pinecone / Qdrant).
-- Automated FAISS index compaction & rebuilding.
-- Live answer streaming via Server-Sent Events (SSE).
-- User authentication, multi-tenancy, and Role-Based Access Control (RBAC).
+### ✅ Phase 5: Advanced Infrastructure & Scale (v0.5.0)
+- **Dual Vector Store Factory**: Local FAISS CPU index by default, with optional cloud Pinecone index integration (`VECTOR_STORE_PROVIDER`).
+- **Real-Time Token Streaming**: Server-Sent Events endpoint (`POST /api/v1/ask/stream`) with real-time typethrough text rendering.
+- **Browser User ID Workspace Isolation**: Automatic unique client User ID in `localStorage`, customizable workspace names (`/settings`), and `X-User-ID` vector search filtering (zero cross-tenant data leakage).
+- **Workspace Settings Page (`/settings`)**: Dedicated settings dashboard for workspace ID management, system telemetry metrics (`GET /api/v1/metrics`), and chat cache maintenance.
+- **API Key Security & Telemetry**: Header API Key verification (`X-API-Key`) and operational metrics API.
+- Verified with 57 Pytest unit tests, 0 Flake8 errors, 0 ESLint errors, 8/8 Next.js static pages compiled, and deployed live to production.
