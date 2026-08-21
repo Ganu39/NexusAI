@@ -1,8 +1,9 @@
 """FastAPI router for RAG answer generation endpoints."""
 
 import json
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
+from middleware.user_context import get_current_user_id
 from models.rag import AskRequest, AskResponse
 from services.rag import RAGService
 
@@ -14,15 +15,15 @@ router = APIRouter(tags=["RAG"])
     response_model=AskResponse,
     status_code=status.HTTP_200_OK,
     summary="Answer a question using grounded RAG context",
-    description=(
-        "Performs semantic search over indexed document chunks, builds "
-        "grounded context, and invokes Gemini LLM to synthesize an answer "
-        "with source attribution."
-    ),
 )
-async def ask_question(request: AskRequest) -> AskResponse:
+async def ask_question(
+    request: AskRequest,
+    user_id: str = Depends(get_current_user_id),
+) -> AskResponse:
     """Answer a user question based on uploaded document context."""
     try:
+        if request.user_id == "default_user" and user_id != "default_user":
+            request.user_id = user_id
         rag_service = RAGService()
         return rag_service.answer_question(request)
     except ValueError as ve:
@@ -47,16 +48,20 @@ async def ask_question(request: AskRequest) -> AskResponse:
     status_code=status.HTTP_200_OK,
     summary="Stream RAG answer tokens using Server-Sent Events (SSE)",
 )
-async def ask_question_stream(request: AskRequest):
+async def ask_question_stream(
+    request: AskRequest,
+    user_id: str = Depends(get_current_user_id),
+):
     """Stream grounded RAG tokens via Server-Sent Events (SSE)."""
     try:
+        if request.user_id == "default_user" and user_id != "default_user":
+            request.user_id = user_id
         rag_service = RAGService()
         sources, grounded, token_gen = (
             rag_service.answer_question_stream(request)
         )
 
         def event_generator():
-            # Event 1: Initial metadata payload
             meta_payload = {
                 "event": "metadata",
                 "sources": [src.model_dump() for src in sources],
@@ -65,12 +70,10 @@ async def ask_question_stream(request: AskRequest):
             }
             yield f"data: {json.dumps(meta_payload)}\n\n"
 
-            # Event 2: Incremental text tokens
             for token in token_gen:
                 token_payload = {"event": "token", "text": token}
                 yield f"data: {json.dumps(token_payload)}\n\n"
 
-            # Event 3: Done signal
             done_payload = {"event": "done"}
             yield f"data: {json.dumps(done_payload)}\n\n"
 

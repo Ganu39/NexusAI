@@ -57,13 +57,22 @@ class PineconeVectorStore(BaseVectorStore):
             self.index.upsert(vectors=vectors)
 
     def similarity_search(
-        self, query_embedding: List[float], top_k: int = 5
+        self,
+        query_embedding: List[float],
+        top_k: int = 5,
+        user_id: Optional[str] = None,
     ) -> List[SearchResult]:
         if not self.index:
             return []
 
+        filter_dict = None
+        if user_id and user_id != "default_user":
+            filter_dict = {"user_id": {"$eq": user_id}}
         res = self.index.query(
-            vector=query_embedding, top_k=top_k, include_metadata=True
+            vector=query_embedding,
+            top_k=top_k,
+            include_metadata=True,
+            filter=filter_dict,
         )
         results: List[SearchResult] = []
         for match in res.get("matches", []):

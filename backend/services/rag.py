@@ -46,7 +46,7 @@ class RAGService:
         """Process user question through RAG pipeline."""
         query_vector = self.embedding_provider.embed_query(request.question)
         raw_results = self.vector_store.similarity_search(
-            query_vector, top_k=request.top_k
+            query_vector, top_k=request.top_k, user_id=request.user_id
         )
         filtered_results = self.context_builder.filter_results(raw_results)
 
@@ -99,7 +99,7 @@ class RAGService:
         """Process user question returning citations and token stream."""
         query_vector = self.embedding_provider.embed_query(request.question)
         raw_results = self.vector_store.similarity_search(
-            query_vector, top_k=request.top_k
+            query_vector, top_k=request.top_k, user_id=request.user_id
         )
         filtered_results = self.context_builder.filter_results(raw_results)
 

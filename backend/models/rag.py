@@ -19,6 +19,10 @@ class AskRequest(BaseModel):
         le=10,
         description="Maximum number of context chunks to retrieve (1-10).",
     )
+    user_id: Optional[str] = Field(
+        default="default_user",
+        description="Owner user identifier for workspace isolation.",
+    )
 
 
 class AskSource(BaseModel):

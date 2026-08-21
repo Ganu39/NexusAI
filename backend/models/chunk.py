@@ -9,6 +9,10 @@ class TextChunk(BaseModel):
 
     chunk_id: str = Field(description="Deterministic chunk identifier")
     document_id: str = Field(description="Source document identifier")
+    user_id: str = Field(
+        default="default_user",
+        description="Owner user identifier for workspace isolation",
+    )
     page_number: Optional[int] = Field(
         default=None, description="1-based page number if available"
     )

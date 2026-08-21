@@ -28,8 +28,10 @@ def get_stored_document(document_id: str) -> Optional[IngestedDocument]:
         return None
 
 
-def list_stored_documents() -> List[IngestedDocumentSummary]:
-    """List metadata summaries of all stored documents sorted by date desc."""
+def list_stored_documents(
+    user_id: Optional[str] = None
+) -> List[IngestedDocumentSummary]:
+    """List metadata summaries of stored documents filtered by user_id."""
     if not os.path.exists(settings.DOCUMENTS_DIR):
         return []
 
@@ -40,9 +42,12 @@ def list_stored_documents() -> List[IngestedDocumentSummary]:
         doc_id = filename[:-5]
         doc = get_stored_document(doc_id)
         if doc:
+            if user_id and doc.user_id and doc.user_id != user_id:
+                continue
             summaries.append(
                 IngestedDocumentSummary(
                     document_id=doc.document_id,
+                    user_id=doc.user_id,
                     filename=doc.filename,
                     file_type=doc.file_type,
                     file_size=doc.file_size,
@@ -57,16 +62,12 @@ def list_stored_documents() -> List[IngestedDocumentSummary]:
                 )
             )
 
-    # Sort descending by created_at or document_id
     summaries.sort(key=lambda d: d.created_at or "", reverse=True)
     return summaries
 
 
 def delete_stored_document(document_id: str) -> bool:
-    """Delete a stored document JSON file from storage.
-
-    Note: Deletes document metadata file. Does not rebuild FAISS vector index.
-    """
+    """Delete a stored document JSON file from storage."""
     file_path = os.path.join(settings.DOCUMENTS_DIR, f"{document_id}.json")
     if not os.path.exists(file_path):
         return False

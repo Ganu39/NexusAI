@@ -4,9 +4,10 @@ import os
 import re
 import uuid
 from typing import Set
-from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
 from config.settings import settings
+from middleware.user_context import get_current_user_id
 from models.document import (
     DocumentDeleteResponse,
     DocumentListResponse,
@@ -51,7 +52,10 @@ def get_extension(filename: str) -> str:
     status_code=status.HTTP_200_OK,
     summary="Upload and ingest a document",
 )
-async def upload_document(file: UploadFile = File(...)):
+async def upload_document(
+    file: UploadFile = File(...),
+    user_id: str = Depends(get_current_user_id),
+):
     """Accept PDF, TXT, or DOCX, validate, and extract text/metadata."""
     if not file or not file.filename:
         raise HTTPException(
@@ -115,6 +119,7 @@ async def upload_document(file: UploadFile = File(...)):
 
         ingested_doc = IngestedDocument(
             document_id=document_id,
+            user_id=user_id,
             filename=filename,
             file_type=ext,
             mime_type=file.content_type or "application/octet-stream",
@@ -130,6 +135,7 @@ async def upload_document(file: UploadFile = File(...)):
 
         summary = IngestedDocumentSummary(
             document_id=ingested_doc.document_id,
+            user_id=ingested_doc.user_id,
             filename=ingested_doc.filename,
             file_type=ingested_doc.file_type,
             file_size=ingested_doc.file_size,
@@ -175,10 +181,12 @@ async def upload_document(file: UploadFile = File(...)):
     status_code=status.HTTP_200_OK,
     summary="List all uploaded document summaries",
 )
-async def list_documents() -> DocumentListResponse:
+async def list_documents(
+    user_id: str = Depends(get_current_user_id),
+) -> DocumentListResponse:
     """Retrieve metadata summaries of all ingested documents."""
     from services.document_store import list_stored_documents
-    docs = list_stored_documents()
+    docs = list_stored_documents(user_id=user_id)
     return DocumentListResponse(documents=docs, total=len(docs))
 
 

@@ -19,6 +19,10 @@ class IngestedDocument(BaseModel):
     """Internal model representing an ingested document."""
 
     document_id: str = Field(description="Unique internal document id")
+    user_id: str = Field(
+        default="default_user",
+        description="Owner user identifier for workspace isolation",
+    )
     filename: str = Field(description="Sanitized original filename")
     file_type: str = Field(
         description="Normalized file extension (pdf, txt, docx)"
@@ -63,6 +67,7 @@ class IngestedDocumentSummary(BaseModel):
     """Document summary returned in API responses (excluding full text)."""
 
     document_id: str
+    user_id: str = "default_user"
     filename: str
     file_type: str
     file_size: int

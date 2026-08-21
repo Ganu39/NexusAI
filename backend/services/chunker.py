@@ -60,6 +60,7 @@ class TextChunker:
                 chunk = TextChunk(
                     chunk_id=chunk_id,
                     document_id=doc.document_id,
+                    user_id=doc.user_id,
                     page_number=page.page_number,
                     chunk_index=overall_chunk_counter,
                     text=text_segment,
@@ -68,6 +69,7 @@ class TextChunker:
                         "filename": doc.filename,
                         "file_type": doc.file_type,
                         "page_chunk_index": p_idx,
+                        "user_id": doc.user_id,
                     },
                 )
                 chunks.append(chunk)

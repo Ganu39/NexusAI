@@ -24,7 +24,10 @@ class BaseVectorStore(ABC):
 
     @abstractmethod
     def similarity_search(
-        self, query_embedding: List[float], top_k: int = 5
+        self,
+        query_embedding: List[float],
+        top_k: int = 5,
+        user_id: Optional[str] = None,
     ) -> List[SearchResult]:
         """Search for top_k most similar chunks given a query vector."""
         pass
@@ -98,7 +101,10 @@ class FAISSVectorStore(BaseVectorStore):
             self.chunk_id_map[chunk.chunk_id] = stored_idx
 
     def similarity_search(
-        self, query_embedding: List[float], top_k: int = 5
+        self,
+        query_embedding: List[float],
+        top_k: int = 5,
+        user_id: Optional[str] = None,
     ) -> List[SearchResult]:
         if (
             self.index is None
@@ -107,7 +113,7 @@ class FAISSVectorStore(BaseVectorStore):
         ):
             return []
 
-        top_k = min(top_k, self.index.ntotal)
+        search_k = min(top_k * 4 if user_id else top_k, self.index.ntotal)
         query_np = np.array([query_embedding], dtype=np.float32)
 
         if query_np.shape[1] != self.dimension:
@@ -117,13 +123,21 @@ class FAISSVectorStore(BaseVectorStore):
             )
 
         faiss.normalize_L2(query_np)
-        distances, indices = self.index.search(query_np, top_k)
+        distances, indices = self.index.search(query_np, search_k)
 
         results: List[SearchResult] = []
         for dist, idx in zip(distances[0], indices[0]):
             if idx < 0 or idx >= len(self.metadata_store):
                 continue
             meta = self.metadata_store[idx]
+
+            # Filter by user_id workspace isolation if specified
+            if user_id and user_id != "default_user":
+                meta_dict = meta.get("metadata", {})
+                chunk_user = meta.get("user_id") or meta_dict.get("user_id")
+                if chunk_user and chunk_user != user_id:
+                    continue
+
             result = SearchResult(
                 chunk_id=meta["chunk_id"],
                 document_id=meta["document_id"],
@@ -134,6 +148,8 @@ class FAISSVectorStore(BaseVectorStore):
                 metadata=meta.get("metadata", {}),
             )
             results.append(result)
+            if len(results) >= top_k:
+                break
 
         return results
 

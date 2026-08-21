@@ -12,6 +12,20 @@ const rawBaseUrl =
   process.env.NEXT_PUBLIC_API_URL || "https://nexusai-1xq9.onrender.com";
 const API_BASE_URL = rawBaseUrl.replace(/\/+$/, "");
 
+export function getOrCreateUserId(): string {
+  if (typeof window === "undefined") return "default_user";
+  try {
+    let userId = localStorage.getItem("nexusai_user_id");
+    if (!userId) {
+      userId = `usr_${Math.random().toString(36).substring(2, 11)}_${Date.now().toString(36)}`;
+      localStorage.setItem("nexusai_user_id", userId);
+    }
+    return userId;
+  } catch {
+    return "default_user";
+  }
+}
+
 export class ApiClientError extends Error {
   status: number;
 
@@ -39,8 +53,15 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 async function safeFetch(url: string, options?: RequestInit): Promise<Response> {
+  const userId = getOrCreateUserId();
+  const headers = new Headers(options?.headers || {});
+  if (!headers.has("X-User-ID")) {
+    headers.set("X-User-ID", userId);
+  }
+  const mergedOptions: RequestInit = { ...options, headers };
+
   try {
-    return await fetch(url, options);
+    return await fetch(url, mergedOptions);
   } catch (err) {
     const errorMsg =
       err instanceof Error ? err.message : "Network error connecting to backend";
@@ -78,7 +99,7 @@ export const apiClient = {
   },
 
   /**
-   * List metadata summaries of all ingested documents.
+   * List metadata summaries of all ingested documents for current user.
    */
   async listDocuments(): Promise<DocumentListResponse> {
     const response = await safeFetch(`${API_BASE_URL}/api/v1/documents`, {
@@ -152,7 +173,7 @@ export const apiClient = {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({ question, top_k: topK }),
+      body: JSON.stringify({ question, top_k: topK, user_id: getOrCreateUserId() }),
     });
 
     return handleResponse<AskResponse>(response);
@@ -173,7 +194,7 @@ export const apiClient = {
         "Content-Type": "application/json",
         Accept: "text/event-stream",
       },
-      body: JSON.stringify({ question, top_k: topK }),
+      body: JSON.stringify({ question, top_k: topK, user_id: getOrCreateUserId() }),
     });
 
     if (!response.ok || !response.body) {
