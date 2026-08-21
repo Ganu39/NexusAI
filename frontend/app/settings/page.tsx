@@ -16,6 +16,9 @@ import {
   Sparkles,
   Loader2,
   AlertCircle,
+  Edit3,
+  Save,
+  X,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { apiClient, getOrCreateUserId, SystemMetrics } from "@/lib/api";
@@ -28,8 +31,15 @@ export default function SettingsPage() {
   const [metricsError, setMetricsError] = useState<string | null>(null);
   const [cacheCleared, setCacheCleared] = useState(false);
 
+  // Custom User ID editing state
+  const [isEditingUserId, setIsEditingUserId] = useState(false);
+  const [customInput, setCustomInput] = useState("");
+  const [idError, setIdError] = useState<string | null>(null);
+
   useEffect(() => {
-    setUserId(getOrCreateUserId());
+    const currentId = getOrCreateUserId();
+    setUserId(currentId);
+    setCustomInput(currentId);
     fetchMetrics();
   }, []);
 
@@ -55,15 +65,35 @@ export default function SettingsPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleSaveCustomUserId = () => {
+    const clean = customInput.trim();
+    if (!clean) {
+      setIdError("User ID cannot be empty.");
+      return;
+    }
+    const sanitized = clean.replace(/[^a-zA-Z0-9_-]/g, "_");
+    if (!sanitized) {
+      setIdError("User ID must contain valid alphanumeric characters.");
+      return;
+    }
+
+    localStorage.setItem("nexusai_user_id", sanitized);
+    setUserId(sanitized);
+    setIsEditingUserId(false);
+    setIdError(null);
+    window.location.reload();
+  };
+
   const handleResetUserId = () => {
     if (
       window.confirm(
-        "Generate a new Workspace User ID? Your repository view will switch to a fresh isolated workspace."
+        "Generate a new random Workspace User ID? Your repository view will switch to a fresh isolated workspace."
       )
     ) {
       const newId = `usr_${Math.random().toString(36).substring(2, 11)}_${Date.now().toString(36)}`;
       localStorage.setItem("nexusai_user_id", newId);
       setUserId(newId);
+      setCustomInput(newId);
       window.location.reload();
     }
   };
@@ -83,7 +113,7 @@ export default function SettingsPage() {
   return (
     <AppShell
       title="Workspace Settings"
-      description="Manage workspace isolation, vector store provider, and operational telemetry."
+      description="Manage workspace isolation, custom user IDs, vector store provider, and operational telemetry."
     >
       <div className="max-w-5xl space-y-6">
         {/* 1. USER ID & WORKSPACE ISOLATION */}
@@ -108,41 +138,98 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-3">
-            <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
-              Your Persistent Client User ID:
-            </label>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <div className="flex-1 rounded-2xl border border-[#1E293B] bg-[#080B11] px-4 py-3 font-mono text-xs text-indigo-300 font-semibold select-all truncate">
-                {userId || "Loading User ID..."}
-              </div>
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+                Your Workspace User ID:
+              </label>
+              {!isEditingUserId && (
                 <button
-                  onClick={handleCopyUserId}
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-2xl border border-[#1E293B] bg-[#141B2D] px-4 py-3 text-xs font-semibold text-zinc-200 hover:bg-[#1E293B] hover:text-white transition-all shadow-sm"
+                  onClick={() => {
+                    setIsEditingUserId(true);
+                    setCustomInput(userId);
+                    setIdError(null);
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
                 >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4 text-emerald-400" />
-                      <span className="text-emerald-400">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4 text-indigo-400" />
-                      <span>Copy ID</span>
-                    </>
-                  )}
+                  <Edit3 className="h-3.5 w-3.5" />
+                  <span>Customize User ID</span>
                 </button>
-
-                <button
-                  onClick={handleResetUserId}
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 transition-all shadow-sm"
-                  title="Generate a new isolated workspace ID"
-                >
-                  <RefreshCw className="h-4 w-4 text-rose-400" />
-                  <span>Reset Workspace</span>
-                </button>
-              </div>
+              )}
             </div>
+
+            {isEditingUserId ? (
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <input
+                    type="text"
+                    value={customInput}
+                    onChange={(e) => setCustomInput(e.target.value)}
+                    placeholder="Enter custom User ID (e.g. my_workspace_1)..."
+                    className="flex-1 rounded-2xl border border-indigo-500/50 bg-[#080B11] px-4 py-3 font-mono text-xs text-indigo-300 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    autoFocus
+                  />
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleSaveCustomUserId}
+                      className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-4 py-3 text-xs font-semibold text-white hover:bg-indigo-500 transition-all shadow-sm"
+                    >
+                      <Save className="h-4 w-4" />
+                      <span>Save & Switch</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsEditingUserId(false);
+                        setIdError(null);
+                      }}
+                      className="flex items-center justify-center rounded-2xl border border-[#1E293B] bg-[#141B2D] p-3 text-zinc-400 hover:text-white transition-colors"
+                      title="Cancel"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                {idError && (
+                  <p className="text-xs text-rose-400">{idError}</p>
+                )}
+                <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  Type any custom workspace name (e.g., <code className="text-indigo-300 font-mono">my_workspace</code> or <code className="text-indigo-300 font-mono font-semibold">team_alpha</code>). You can switch between custom IDs anytime!
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="flex-1 rounded-2xl border border-[#1E293B] bg-[#080B11] px-4 py-3 font-mono text-xs text-indigo-300 font-semibold select-all truncate">
+                  {userId || "Loading User ID..."}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleCopyUserId}
+                    className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-2xl border border-[#1E293B] bg-[#141B2D] px-4 py-3 text-xs font-semibold text-zinc-200 hover:bg-[#1E293B] hover:text-white transition-all shadow-sm"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="h-4 w-4 text-emerald-400" />
+                        <span className="text-emerald-400">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4 text-indigo-400" />
+                        <span>Copy ID</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={handleResetUserId}
+                    className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 transition-all shadow-sm"
+                    title="Generate a new random isolated workspace ID"
+                  >
+                    <RefreshCw className="h-4 w-4 text-rose-400" />
+                    <span>Randomize</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
             <p className="text-[11px] text-zinc-500 leading-relaxed">
               Your User ID is saved in your browser&apos;s <code className="text-indigo-400 font-mono">localStorage</code>. Documents uploaded under this ID remain isolated to your session.
             </p>
