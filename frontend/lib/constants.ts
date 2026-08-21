@@ -150,14 +150,14 @@ export const ROADMAP_PHASES = [
   },
   {
     phase: "Phase 5",
-    title: "Advanced Infrastructure",
-    statusLabel: "IN PROGRESS",
-    status: "current",
+    title: "Advanced Infrastructure & Scale",
+    statusLabel: "COMPLETED",
+    status: "completed",
     items: [
-      "Cloud vector database",
-      "Streaming RAG responses",
-      "Authentication and RBAC",
-      "Advanced scalability"
+      "Dual vector database (FAISS & Pinecone)",
+      "Streaming RAG responses (SSE)",
+      "User ID workspace isolation & custom naming",
+      "Workspace Settings & System Telemetry"
     ],
   },
 ];
