@@ -134,8 +134,8 @@ export const ROADMAP_PHASES = [
   {
     phase: "Phase 4",
     title: "Production Hardening & RAG Quality",
-    statusLabel: "IN PROGRESS",
-    status: "current",
+    statusLabel: "COMPLETED",
+    status: "completed",
     items: [
       "Persistent indexing status",
       "Improved document management",
@@ -151,8 +151,8 @@ export const ROADMAP_PHASES = [
   {
     phase: "Phase 5",
     title: "Advanced Infrastructure",
-    statusLabel: "PLANNED",
-    status: "planned",
+    statusLabel: "IN PROGRESS",
+    status: "current",
     items: [
       "Cloud vector database",
       "Streaming RAG responses",
