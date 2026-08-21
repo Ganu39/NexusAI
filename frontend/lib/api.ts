@@ -54,10 +54,10 @@ async function safeFetch(url: string, options?: RequestInit): Promise<Response> 
 export interface SystemMetrics {
   service: string;
   vector_provider: string;
-  total_documents: int;
-  total_indexed_documents: int;
-  total_chunks_created: int;
-  total_embeddings_created: int;
+  total_documents: number;
+  total_indexed_documents: number;
+  total_chunks_created: number;
+  total_embeddings_created: number;
   storage_directory_exists: boolean;
 }
 
