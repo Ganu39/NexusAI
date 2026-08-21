@@ -1,7 +1,7 @@
 """LLM provider abstraction for NexusAI."""
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Iterator, Optional
 from google import genai
 from google.genai import types
 
@@ -15,15 +15,14 @@ class BaseLLMProvider(ABC):
     def generate(
         self, prompt: str, system_instruction: Optional[str] = None
     ) -> str:
-        """Generate text from a prompt and optional system instruction.
+        """Generate text from a prompt and optional system instruction."""
+        pass
 
-        Args:
-            prompt: User prompt or grounded input text.
-            system_instruction: System prompt framing rules and instructions.
-
-        Returns:
-            Generated text string.
-        """
+    @abstractmethod
+    def generate_stream(
+        self, prompt: str, system_instruction: Optional[str] = None
+    ) -> Iterator[str]:
+        """Stream text tokens from a prompt and optional system instruction."""
         pass
 
 
@@ -36,13 +35,7 @@ class GeminiLLMProvider(BaseLLMProvider):
         model_name: Optional[str] = None,
         temperature: Optional[float] = None,
     ):
-        """Initialize the Gemini LLM provider.
-
-        Args:
-            api_key: Gemini API key. Defaults to settings.GEMINI_API_KEY.
-            model_name: Gemini model name. Defaults to settings.LLM_MODEL.
-            temperature: LLM temperature. Defaults to settings.LLM_TEMPERATURE.
-        """
+        """Initialize the Gemini LLM provider."""
         self.api_key = (
             api_key if api_key is not None else settings.GEMINI_API_KEY
         )
@@ -71,15 +64,7 @@ class GeminiLLMProvider(BaseLLMProvider):
     def generate(
         self, prompt: str, system_instruction: Optional[str] = None
     ) -> str:
-        """Generate text using Google Gemini API.
-
-        Args:
-            prompt: Grounded prompt text.
-            system_instruction: Optional system instruction.
-
-        Returns:
-            Generated answer text string.
-        """
+        """Generate text using Google Gemini API."""
         if not prompt or not prompt.strip():
             raise ValueError("Prompt cannot be empty.")
 
@@ -103,3 +88,28 @@ class GeminiLLMProvider(BaseLLMProvider):
             if isinstance(e, (ValueError, RuntimeError)):
                 raise
             raise RuntimeError(f"Gemini API generation failed: {str(e)}")
+
+    def generate_stream(
+        self, prompt: str, system_instruction: Optional[str] = None
+    ) -> Iterator[str]:
+        """Stream text tokens using Google Gemini API."""
+        if not prompt or not prompt.strip():
+            raise ValueError("Prompt cannot be empty.")
+
+        try:
+            config = types.GenerateContentConfig(
+                temperature=self.temperature,
+                system_instruction=system_instruction,
+            )
+            response_stream = self.client.models.generate_content_stream(
+                model=self.model_name,
+                contents=prompt,
+                config=config,
+            )
+
+            for chunk in response_stream:
+                if chunk and chunk.text:
+                    yield chunk.text
+
+        except Exception as e:
+            raise RuntimeError(f"Gemini API streaming failed: {str(e)}")

@@ -140,29 +140,77 @@ export function RAGChat() {
     const stageTimer3 = setTimeout(() => setActivePipelineStage(3), 1000);
     const stageTimer4 = setTimeout(() => setActivePipelineStage(4), 1400);
 
+    const assistantMsgId = `assistant-${Date.now()}`;
+    const timestampStr = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
     try {
-      const askRes = await apiClient.askQuestion(queryText, topK);
-      setActivePipelineStage(5);
-      const assistantMsgId = `assistant-${Date.now()}`;
-      const assistantMsg: ChatMessage = {
-        id: assistantMsgId,
-        sender: "assistant",
-        text: askRes.answer,
-        response: askRes,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
-      // Default expand sources for instant transparency
-      setExpandedSources((prev) => ({ ...prev, [assistantMsgId]: true }));
-    } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : "Failed to connect to NexusAI RAG engine.";
-      setError(msg);
+      let isFirstMetadata = true;
+      await apiClient.askQuestionStream(
+        queryText,
+        topK,
+        (sources, grounded, retrieved_chunks) => {
+          if (isFirstMetadata) {
+            isFirstMetadata = false;
+            setActivePipelineStage(5);
+            const initialMsg: ChatMessage = {
+              id: assistantMsgId,
+              sender: "assistant",
+              text: "",
+              response: {
+                question: queryText,
+                answer: "",
+                sources,
+                retrieved_chunks,
+                grounded,
+              },
+              timestamp: timestampStr,
+            };
+            setMessages((prev) => [...prev, initialMsg]);
+            setExpandedSources((prev) => ({ ...prev, [assistantMsgId]: true }));
+          }
+        },
+        (token) => {
+          setMessages((prev) =>
+            prev.map((msg) => {
+              if (msg.id === assistantMsgId) {
+                const newText = msg.text + token;
+                return {
+                  ...msg,
+                  text: newText,
+                  response: msg.response
+                    ? { ...msg.response, answer: newText }
+                    : undefined,
+                };
+              }
+              return msg;
+            })
+          );
+        }
+      );
+    } catch {
+      // Fallback to standard HTTP ask endpoint if SSE stream fails
+      try {
+        const askRes = await apiClient.askQuestion(queryText, topK);
+        setActivePipelineStage(5);
+        const assistantMsg: ChatMessage = {
+          id: assistantMsgId,
+          sender: "assistant",
+          text: askRes.answer,
+          response: askRes,
+          timestamp: timestampStr,
+        };
+        setMessages((prev) => [...prev, assistantMsg]);
+        setExpandedSources((prev) => ({ ...prev, [assistantMsgId]: true }));
+      } catch (err: unknown) {
+        const msg =
+          err instanceof Error
+            ? err.message
+            : "Failed to connect to NexusAI RAG engine.";
+        setError(msg);
+      }
     } finally {
       clearTimeout(stageTimer1);
       clearTimeout(stageTimer2);

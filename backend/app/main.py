@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from api.metrics import router as metrics_router
 from api.rag import router as rag_router
 from api.search import router as search_router
 from api.upload import router as upload_router
@@ -10,7 +11,7 @@ from config.settings import settings
 app = FastAPI(
     title="NexusAI API",
     description="Enterprise-grade AI Knowledge Workspace API",
-    version="0.1.0",
+    version="0.5.0",
 )
 
 app.add_middleware(
@@ -28,6 +29,8 @@ app.include_router(search_router)
 app.include_router(search_router, prefix="/api/v1")
 app.include_router(rag_router)
 app.include_router(rag_router, prefix="/api/v1")
+app.include_router(metrics_router)
+app.include_router(metrics_router, prefix="/api/v1")
 
 
 @app.api_route("/health", methods=["GET", "HEAD"], tags=["Health"])

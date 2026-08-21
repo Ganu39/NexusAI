@@ -1,9 +1,10 @@
 """RAG orchestration service for NexusAI."""
 
-from typing import Optional
+from typing import Iterator, Optional, Tuple
 from models.rag import AskRequest, AskResponse, AskSource
 from services.embedding import BaseEmbeddingProvider, GeminiEmbeddingProvider
-from services.vector_store import BaseVectorStore, FAISSVectorStore
+from services.vector_store import BaseVectorStore
+from services.vector_store_factory import get_vector_store
 from services.llm import BaseLLMProvider, GeminiLLMProvider
 from services.context_builder import ContextBuilder
 from services.prompts import RAG_SYSTEM_INSTRUCTION, build_rag_user_prompt
@@ -19,14 +20,7 @@ class RAGService:
         llm_provider: Optional[BaseLLMProvider] = None,
         context_builder: Optional[ContextBuilder] = None,
     ):
-        """Initialize RAGService components.
-
-        Args:
-            embedding_provider: Embedding service.
-            vector_store: Vector store.
-            llm_provider: LLM service.
-            context_builder: Context builder.
-        """
+        """Initialize RAGService components."""
         self.embedding_provider = (
             embedding_provider
             if embedding_provider is not None
@@ -35,7 +29,7 @@ class RAGService:
         self.vector_store = (
             vector_store
             if vector_store is not None
-            else FAISSVectorStore()
+            else get_vector_store()
         )
         self.llm_provider = (
             llm_provider
@@ -49,26 +43,13 @@ class RAGService:
         )
 
     def answer_question(self, request: AskRequest) -> AskResponse:
-        """Process user question through RAG pipeline.
-
-        Args:
-            request: AskRequest instance.
-
-        Returns:
-            AskResponse with grounded answer and sources.
-        """
-        # 1. Generate query embedding
+        """Process user question through RAG pipeline."""
         query_vector = self.embedding_provider.embed_query(request.question)
-
-        # 2. Retrieve top_k similarity results
         raw_results = self.vector_store.similarity_search(
             query_vector, top_k=request.top_k
         )
-
-        # 3. Filter results using ContextBuilder thresholding
         filtered_results = self.context_builder.filter_results(raw_results)
 
-        # 4. Handle insufficient context (no chunks pass threshold)
         if not filtered_results:
             return AskResponse(
                 question=request.question,
@@ -81,19 +62,14 @@ class RAGService:
                 grounded=False,
             )
 
-        # 5. Build formatted context string
         context_text = self.context_builder.build_context(filtered_results)
-
-        # 6. Build user prompt
         user_prompt = build_rag_user_prompt(request.question, context_text)
 
-        # 7. Call LLM provider
         answer_text = self.llm_provider.generate(
             prompt=user_prompt,
             system_instruction=RAG_SYSTEM_INSTRUCTION,
         )
 
-        # 8. Build AskSource list
         sources: list[AskSource] = []
         for res in filtered_results:
             filename = res.metadata.get("filename", "Unknown Document")
@@ -116,3 +92,46 @@ class RAGService:
             retrieved_chunks=len(sources),
             grounded=True,
         )
+
+    def answer_question_stream(
+        self, request: AskRequest
+    ) -> Tuple[list[AskSource], bool, Iterator[str]]:
+        """Process user question returning citations and token stream."""
+        query_vector = self.embedding_provider.embed_query(request.question)
+        raw_results = self.vector_store.similarity_search(
+            query_vector, top_k=request.top_k
+        )
+        filtered_results = self.context_builder.filter_results(raw_results)
+
+        if not filtered_results:
+            def fallback_gen():
+                yield (
+                    "I couldn't find enough information in the uploaded "
+                    "documents to answer that question."
+                )
+            return [], False, fallback_gen()
+
+        context_text = self.context_builder.build_context(filtered_results)
+        user_prompt = build_rag_user_prompt(request.question, context_text)
+
+        sources: list[AskSource] = []
+        for res in filtered_results:
+            filename = res.metadata.get("filename", "Unknown Document")
+            sources.append(
+                AskSource(
+                    chunk_id=res.chunk_id,
+                    document_id=res.document_id,
+                    filename=filename,
+                    page_number=res.page_number,
+                    score=res.score,
+                    metadata=res.metadata,
+                    text_snippet=res.text,
+                )
+            )
+
+        token_stream = self.llm_provider.generate_stream(
+            prompt=user_prompt,
+            system_instruction=RAG_SYSTEM_INSTRUCTION,
+        )
+
+        return sources, True, token_stream

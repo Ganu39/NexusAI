@@ -1,5 +1,6 @@
 import {
   AskResponse,
+  AskSource,
   DocumentDeleteResponse,
   DocumentListResponse,
   IndexingResponse,
@@ -48,6 +49,16 @@ async function safeFetch(url: string, options?: RequestInit): Promise<Response> 
       0
     );
   }
+}
+
+export interface SystemMetrics {
+  service: string;
+  vector_provider: string;
+  total_documents: int;
+  total_indexed_documents: int;
+  total_chunks_created: int;
+  total_embeddings_created: int;
+  storage_directory_exists: boolean;
 }
 
 export const apiClient = {
@@ -145,5 +156,67 @@ export const apiClient = {
     });
 
     return handleResponse<AskResponse>(response);
+  },
+
+  /**
+   * Stream grounded RAG answer tokens using Server-Sent Events (SSE).
+   */
+  async askQuestionStream(
+    question: string,
+    topK: number = 5,
+    onMetadata: (sources: AskSource[], grounded: boolean, retrievedChunks: number) => void,
+    onToken: (token: string) => void
+  ): Promise<void> {
+    const response = await safeFetch(`${API_BASE_URL}/api/v1/ask/stream`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "text/event-stream",
+      },
+      body: JSON.stringify({ question, top_k: topK }),
+    });
+
+    if (!response.ok || !response.body) {
+      throw new ApiClientError(`Streaming request failed (HTTP ${response.status})`, response.status);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+
+      const lines = buffer.split("\n\n");
+      buffer = lines.pop() || "";
+
+      for (const line of lines) {
+        if (line.startsWith("data: ")) {
+          try {
+            const parsed = JSON.parse(line.slice(6));
+            if (parsed.event === "metadata") {
+              onMetadata(parsed.sources || [], Boolean(parsed.grounded), parsed.retrieved_chunks || 0);
+            } else if (parsed.event === "token" && parsed.text) {
+              onToken(parsed.text);
+            }
+          } catch {
+            // Ignore malformed JSON chunks
+          }
+        }
+      }
+    }
+  },
+
+  /**
+   * Get operational metrics and vector store provider.
+   */
+  async getMetrics(): Promise<SystemMetrics> {
+    const response = await safeFetch(`${API_BASE_URL}/api/v1/metrics`, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    });
+    return handleResponse<SystemMetrics>(response);
   },
 };

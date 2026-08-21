@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 150
     VECTOR_STORE_DIR: str = os.path.join(os.getcwd(), "faiss_index")
+    VECTOR_STORE_PROVIDER: str = "faiss"
+    PINECONE_API_KEY: str = ""
+    PINECONE_INDEX_NAME: str = "nexusai-index"
+
+    NEXUSAI_API_KEY: str = ""
 
     LLM_MODEL: str = "gemini-2.5-flash"
     LLM_TEMPERATURE: float = 0.2

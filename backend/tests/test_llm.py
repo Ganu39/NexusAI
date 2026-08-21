@@ -1,5 +1,6 @@
 """Unit tests for LLM provider abstraction."""
 
+from typing import Iterator, Optional
 from unittest.mock import MagicMock, patch
 import pytest
 
@@ -13,9 +14,14 @@ class MockLLMProvider(BaseLLMProvider):
         self.response_text = response_text
 
     def generate(
-        self, prompt: str, system_instruction: str | None = None
+        self, prompt: str, system_instruction: Optional[str] = None
     ) -> str:
         return self.response_text
+
+    def generate_stream(
+        self, prompt: str, system_instruction: Optional[str] = None
+    ) -> Iterator[str]:
+        yield self.response_text
 
 
 def test_missing_api_key_raises_value_error():
