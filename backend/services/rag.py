@@ -105,6 +105,7 @@ class RAGService:
                     page_number=res.page_number,
                     score=res.score,
                     metadata=res.metadata,
+                    text_snippet=res.text,
                 )
             )
 

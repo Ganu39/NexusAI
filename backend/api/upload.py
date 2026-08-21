@@ -136,6 +136,11 @@ async def upload_document(file: UploadFile = File(...)):
             page_count=ingested_doc.page_count,
             character_count=ingested_doc.character_count,
             created_at=ingested_doc.created_at,
+            is_indexed=ingested_doc.is_indexed,
+            processing_status=ingested_doc.processing_status,
+            chunks_created=ingested_doc.chunks_created,
+            embeddings_created=ingested_doc.embeddings_created,
+            indexed_at=ingested_doc.indexed_at,
         )
 
         return UploadResponse(
@@ -200,6 +205,11 @@ async def get_document(document_id: str) -> IngestedDocumentSummary:
         page_count=doc.page_count,
         character_count=doc.character_count,
         created_at=doc.created_at,
+        is_indexed=doc.is_indexed,
+        processing_status=doc.processing_status,
+        chunks_created=doc.chunks_created,
+        embeddings_created=doc.embeddings_created,
+        indexed_at=doc.indexed_at,
     )
 
 

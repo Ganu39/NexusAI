@@ -41,6 +41,22 @@ class IngestedDocument(BaseModel):
     metadata: Dict[str, Any] = Field(
         default_factory=dict, description="Additional document metadata"
     )
+    is_indexed: bool = Field(
+        default=False, description="Whether vectors are indexed in FAISS"
+    )
+    processing_status: str = Field(
+        default="uploaded",
+        description="Lifecycle status: uploaded, indexing, indexed, failed",
+    )
+    chunks_created: int = Field(
+        default=0, description="Total text chunks generated for indexing"
+    )
+    embeddings_created: int = Field(
+        default=0, description="Total Gemini embeddings generated"
+    )
+    indexed_at: Optional[str] = Field(
+        default=None, description="ISO 8601 UTC timestamp when indexed"
+    )
 
 
 class IngestedDocumentSummary(BaseModel):
@@ -53,6 +69,11 @@ class IngestedDocumentSummary(BaseModel):
     page_count: int
     character_count: int
     created_at: Optional[str] = None
+    is_indexed: bool = False
+    processing_status: str = "uploaded"
+    chunks_created: int = 0
+    embeddings_created: int = 0
+    indexed_at: Optional[str] = None
 
 
 class UploadResponse(BaseModel):

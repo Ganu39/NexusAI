@@ -9,7 +9,6 @@ import {
   AlertCircle,
   Loader2,
   Cpu,
-  CheckCircle2,
   Sparkles,
 } from "lucide-react";
 import { IngestedDocumentSummary } from "@/types";
@@ -57,7 +56,7 @@ export function DocumentList({
 }: DocumentListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
-  const [sortBy, setSortBy] = useState<"date" | "name" | "size">("date");
+  const [sortBy, setSortBy] = useState<"date" | "name" | "size" | "status">("date");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [indexingId, setIndexingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -100,6 +99,7 @@ export function DocumentList({
           embeddings: res.embeddings_created,
         },
       }));
+      onRefresh();
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Failed to generate vector index.";
@@ -126,6 +126,11 @@ export function DocumentList({
     }
     if (sortBy === "size") {
       return b.file_size - a.file_size;
+    }
+    if (sortBy === "status") {
+      const aIndexed = a.is_indexed ? 1 : 0;
+      const bIndexed = b.is_indexed ? 1 : 0;
+      return bIndexed - aIndexed;
     }
     // Default: date created_at or recent
     const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
@@ -225,12 +230,13 @@ export function DocumentList({
           <span className="text-[11px] uppercase tracking-wider text-zinc-500">Sort:</span>
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as "date" | "name" | "size")}
+            onChange={(e) => setSortBy(e.target.value as "date" | "name" | "size" | "status")}
             className="rounded-xl border border-[#1E293B] bg-[#080B11] px-2.5 py-1.5 text-xs text-zinc-200 focus:border-indigo-500 focus:outline-none"
           >
             <option value="date">Newest</option>
             <option value="name">Name</option>
             <option value="size">Size</option>
+            <option value="status">Index Status</option>
           </select>
         </div>
       </div>
@@ -266,7 +272,8 @@ export function DocumentList({
               </tr>
             ) : (
               sortedDocs.map((doc) => {
-                const indexed = indexState[doc.document_id];
+                const isIndexed = doc.is_indexed || Boolean(indexState[doc.document_id]);
+                const chunks = doc.chunks_created || indexState[doc.document_id]?.chunks || 0;
                 const isIndexing = indexingId === doc.document_id;
                 const isDeleting = deletingId === doc.document_id;
 
@@ -308,20 +315,20 @@ export function DocumentList({
                       {formatDate(doc.created_at)}
                     </td>
                     <td className="px-3 py-3.5">
-                      {indexed ? (
+                      {isIndexed ? (
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-500/10 px-2.5 py-0.5 text-[11px] font-medium text-purple-300 border border-purple-500/20">
                           <Sparkles className="h-3 w-3 text-purple-400" />
-                          <span>Indexed ({indexed.chunks} Chunks • {indexed.embeddings} FAISS Vectors)</span>
+                          <span>Indexed {chunks > 0 ? `(${chunks} Chunks)` : "in FAISS"}</span>
                         </span>
                       ) : isIndexing ? (
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 px-2.5 py-0.5 text-[11px] font-medium text-indigo-300 border border-indigo-500/20">
                           <Loader2 className="h-3 w-3 animate-spin text-indigo-400" />
-                          <span className="font-mono text-[10px]">Chunks → Embeddings → FAISS...</span>
+                          <span className="font-mono text-[10px]">Indexing...</span>
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400 border border-emerald-500/20">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                          <span>Ingested</span>
+                          <span>Uploaded</span>
                         </span>
                       )}
                     </td>
@@ -331,7 +338,7 @@ export function DocumentList({
                           onClick={() => handleIndex(doc.document_id)}
                           disabled={isIndexing || isDeleting}
                           className={`flex items-center gap-1 rounded-xl border px-2.5 py-1 text-xs font-semibold transition-all ${
-                            indexed
+                            isIndexed
                               ? "border-purple-500/20 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"
                               : "border-indigo-500/20 bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600/20"
                           } disabled:opacity-50`}
@@ -342,7 +349,7 @@ export function DocumentList({
                           ) : (
                             <Cpu className="h-3 w-3" />
                           )}
-                          <span>{indexed ? "Re-Index" : "Index"}</span>
+                          <span>{isIndexed ? "Re-Index" : "Index"}</span>
                         </button>
 
                         <Link
@@ -383,7 +390,7 @@ export function DocumentList({
           </div>
         ) : (
           sortedDocs.map((doc) => {
-            const indexed = indexState[doc.document_id];
+            const isIndexed = doc.is_indexed || Boolean(indexState[doc.document_id]);
             const isIndexing = indexingId === doc.document_id;
             const isDeleting = deletingId === doc.document_id;
 
@@ -406,7 +413,7 @@ export function DocumentList({
                       </span>
                     </div>
                   </div>
-                  {indexed ? (
+                  {isIndexed ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-medium text-purple-300 border border-purple-500/20">
                       <Sparkles className="h-3 w-3 text-purple-400" />
                       Indexed
@@ -422,8 +429,8 @@ export function DocumentList({
                   <div>Pages: {doc.page_count}</div>
                   <div>Chars: {doc.character_count.toLocaleString()}</div>
                   <div>Date: {formatDate(doc.created_at)}</div>
-                  {indexed && (
-                    <div>Chunks: {indexed.chunks} created</div>
+                  {isIndexed && (
+                    <div>Status: Indexed in FAISS</div>
                   )}
                 </div>
 
@@ -438,7 +445,7 @@ export function DocumentList({
                     ) : (
                       <Cpu className="h-3.5 w-3.5" />
                     )}
-                    <span>{indexed ? "Re-Index" : "Index Vector"}</span>
+                    <span>{isIndexed ? "Re-Index" : "Index Vector"}</span>
                   </button>
                   <Link
                     href={`/documents/${doc.document_id}`}

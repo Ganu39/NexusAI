@@ -73,6 +73,12 @@ export default function DocumentDetailPage({ params }: PageParams) {
       try {
         const data = await apiClient.getDocument(documentId);
         setDoc(data);
+        if (data.is_indexed) {
+          setIndexResult({
+            chunks: data.chunks_created || 0,
+            embeddings: data.embeddings_created || 0,
+          });
+        }
       } catch (err: unknown) {
         const msg =
           err instanceof Error
@@ -96,6 +102,9 @@ export default function DocumentDetailPage({ params }: PageParams) {
         chunks: res.chunks_created,
         embeddings: res.embeddings_created,
       });
+      // Refresh doc data
+      const updated = await apiClient.getDocument(doc.document_id);
+      setDoc(updated);
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Failed to generate vector index.";
@@ -127,6 +136,8 @@ export default function DocumentDetailPage({ params }: PageParams) {
       setDeleting(false);
     }
   };
+
+  const isIndexed = doc?.is_indexed || Boolean(indexResult);
 
   return (
     <AppShell
@@ -160,7 +171,7 @@ export default function DocumentDetailPage({ params }: PageParams) {
                 ) : (
                   <Cpu className="h-4 w-4" />
                 )}
-                <span>{indexResult ? "Re-Index Vector" : "Index Vector"}</span>
+                <span>{isIndexed ? "Re-Index Vector" : "Index Vector"}</span>
               </button>
               <button
                 onClick={handleDelete}
@@ -222,10 +233,10 @@ export default function DocumentDetailPage({ params }: PageParams) {
             </div>
 
             <div>
-              {indexResult ? (
+              {isIndexed ? (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-500/10 px-3 py-1 text-xs font-medium text-purple-300 border border-purple-500/20">
                   <Sparkles className="h-3.5 w-3.5 text-purple-400" />
-                  Indexed ({indexResult.chunks} Chunks, {indexResult.embeddings} Vectors)
+                  Indexed ({doc.chunks_created || indexResult?.chunks || 0} Chunks)
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20">
@@ -237,16 +248,16 @@ export default function DocumentDetailPage({ params }: PageParams) {
           </div>
 
           {/* Index Result Banner */}
-          {indexResult && (
+          {isIndexed && (
             <div className="flex items-center gap-3 rounded-2xl border border-purple-500/20 bg-purple-500/10 p-4 text-purple-300 text-xs">
               <Sparkles className="h-5 w-5 text-purple-400 shrink-0" />
               <div>
                 <p className="font-semibold text-purple-200">
-                  Document Vector Embeddings Generated Successfully!
+                  Document Vector Embeddings Active in FAISS Index
                 </p>
                 <p className="text-zinc-400 mt-0.5">
-                  Generated {indexResult.chunks} page-aware semantic text chunks and{" "}
-                  {indexResult.embeddings} Gemini 3072d vector embeddings in local FAISS store.
+                  Generated {doc.chunks_created || indexResult?.chunks || 0} page-aware semantic text chunks and{" "}
+                  {doc.embeddings_created || indexResult?.embeddings || 0} Gemini 3072d vector embeddings.
                 </p>
               </div>
             </div>

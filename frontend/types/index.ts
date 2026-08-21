@@ -15,6 +15,11 @@ export interface IngestedDocumentSummary {
   page_count: number;
   character_count: number;
   created_at?: string | null;
+  is_indexed?: boolean;
+  processing_status?: "uploaded" | "indexing" | "indexed" | "failed" | string;
+  chunks_created?: number;
+  embeddings_created?: number;
+  indexed_at?: string | null;
 }
 
 export interface IngestedDocument extends IngestedDocumentSummary {
@@ -59,6 +64,7 @@ export interface AskSource {
   page_number?: number | null;
   score: number;
   metadata?: Record<string, unknown>;
+  text_snippet?: string;
 }
 
 export interface AskResponse {

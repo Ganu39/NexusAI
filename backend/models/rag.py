@@ -36,6 +36,10 @@ class AskSource(BaseModel):
         default_factory=dict,
         description="Preserved chunk metadata.",
     )
+    text_snippet: Optional[str] = Field(
+        default=None,
+        description="Raw text snippet of the retrieved chunk.",
+    )
 
 
 class AskResponse(BaseModel):

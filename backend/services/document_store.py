@@ -49,6 +49,11 @@ def list_stored_documents() -> List[IngestedDocumentSummary]:
                     page_count=doc.page_count,
                     character_count=doc.character_count,
                     created_at=doc.created_at,
+                    is_indexed=doc.is_indexed,
+                    processing_status=doc.processing_status,
+                    chunks_created=doc.chunks_created,
+                    embeddings_created=doc.embeddings_created,
+                    indexed_at=doc.indexed_at,
                 )
             )
 

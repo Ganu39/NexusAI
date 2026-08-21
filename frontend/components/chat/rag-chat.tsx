@@ -15,12 +15,9 @@ import {
   ChevronUp,
   Info,
   CornerDownRight,
-  Database,
-  Search,
-  Cpu,
-  Layers,
-  Activity,
-  ShieldCheck,
+  Trash2,
+  Eye,
+  X,
 } from "lucide-react";
 import { AskResponse, AskSource } from "@/types";
 import { apiClient } from "@/lib/api";
@@ -49,6 +46,8 @@ const SUGGESTED_QUESTIONS = [
   "Where is this information mentioned?",
 ];
 
+const SESSION_STORAGE_KEY = "nexusai_rag_chat_messages";
+
 export function RAGChat() {
   const [question, setQuestion] = useState("");
   const [topK, setTopK] = useState(5);
@@ -57,12 +56,61 @@ export function RAGChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [expandedSources, setExpandedSources] = useState<Record<string, boolean>>({});
   const [activePipelineStage, setActivePipelineStage] = useState<number>(-1);
+  const [activeSourceModal, setActiveSourceModal] = useState<AskSource | null>(null);
+
+  // Restore session chat messages from sessionStorage
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(SESSION_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setMessages(parsed);
+          // Default expand all assistant message sources
+          const expanded: Record<string, boolean> = {};
+          parsed.forEach((m) => {
+            if (m.sender === "assistant") expanded[m.id] = true;
+          });
+          setExpandedSources(expanded);
+        }
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }, []);
+
+  // Save session chat messages to sessionStorage
+  useEffect(() => {
+    try {
+      if (messages.length > 0) {
+        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(messages));
+      } else {
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, [messages]);
 
   const toggleSources = (msgId: string) => {
     setExpandedSources((prev) => ({
       ...prev,
       [msgId]: !prev[msgId],
     }));
+  };
+
+  const handleClearChat = () => {
+    if (messages.length === 0) return;
+    if (window.confirm("Clear current conversation history?")) {
+      setMessages([]);
+      setExpandedSources({});
+      setError(null);
+      try {
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      } catch {
+        // Ignore
+      }
+    }
   };
 
   const handleSend = async (customQuestion?: string) => {
@@ -133,7 +181,7 @@ export function RAGChat() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-10.5rem)] flex-col rounded-3xl border border-[#1E293B] bg-[#0E131F] overflow-hidden shadow-2xl">
+    <div className="flex h-[calc(100vh-10.5rem)] flex-col rounded-3xl border border-[#1E293B] bg-[#0E131F] overflow-hidden shadow-2xl relative">
       {/* 1. TOP HEADER & RAG CONTROLS */}
       <div className="flex flex-wrap items-center justify-between border-b border-[#1E293B] bg-[#080B11]/80 px-6 py-4 gap-4">
         <div className="flex items-center gap-3.5">
@@ -158,7 +206,7 @@ export function RAGChat() {
           </div>
         </div>
 
-        {/* Top-K Selector */}
+        {/* Top-K Selector & Clear Chat */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 rounded-xl border border-[#1E293B] bg-[#141B2D] px-3.5 py-1.5 text-xs text-zinc-300 shadow-sm">
             <Sliders className="h-3.5 w-3.5 text-indigo-400" />
@@ -175,6 +223,17 @@ export function RAGChat() {
               ))}
             </select>
           </div>
+
+          {messages.length > 0 && (
+            <button
+              onClick={handleClearChat}
+              className="flex items-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 transition-all"
+              title="Clear conversation history"
+            >
+              <Trash2 className="h-3.5 w-3.5 text-rose-400" />
+              <span>Clear Chat</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -346,21 +405,25 @@ export function RAGChat() {
                     {/* Sources Attribution Grid */}
                     {msg.response && expandedSources[msg.id] && msg.response.sources.length > 0 && (
                       <div className="pt-3 border-t border-[#1E293B] space-y-2.5">
-                        <div className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
-                          <CornerDownRight className="h-3.5 w-3.5 text-indigo-400" />
-                          <span>Connected Source Citations:</span>
+                        <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
+                          <div className="flex items-center gap-1.5">
+                            <CornerDownRight className="h-3.5 w-3.5 text-indigo-400" />
+                            <span>Connected Source Citations:</span>
+                          </div>
+                          <span className="text-zinc-500 text-[10px]">Click any source card to view chunk text</span>
                         </div>
 
                         <div className="grid grid-cols-1 gap-2.5">
                           {msg.response.sources.map((src: AskSource, sIdx: number) => (
                             <div
                               key={src.chunk_id || sIdx}
-                              className="rounded-xl border border-[#1E293B] bg-[#0E131F] p-3.5 space-y-2 text-zinc-300 hover:border-indigo-500/40 transition-colors"
+                              onClick={() => setActiveSourceModal(src)}
+                              className="rounded-xl border border-[#1E293B] bg-[#0E131F] p-3.5 space-y-2 text-zinc-300 hover:border-indigo-500/50 hover:bg-[#141B2D] transition-all cursor-pointer group shadow-sm"
                             >
                               <div className="flex items-center justify-between font-medium">
                                 <div className="flex items-center gap-2 text-indigo-300 truncate max-w-[260px] sm:max-w-md">
                                   <FileText className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
-                                  <span className="truncate text-xs font-mono">{src.filename}</span>
+                                  <span className="truncate text-xs font-mono group-hover:text-indigo-200 transition-colors">{src.filename}</span>
                                 </div>
                                 <div className="flex items-center gap-2 shrink-0">
                                   <span className="rounded bg-[#141B2D] border border-[#1E293B] px-2 py-0.5 text-[10px] font-mono text-zinc-400">
@@ -369,10 +432,12 @@ export function RAGChat() {
                                   <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400 border border-emerald-500/20">
                                     {(src.score * 100).toFixed(1)}% Relevance
                                   </span>
+                                  <Eye className="h-3.5 w-3.5 text-zinc-500 group-hover:text-indigo-400 transition-colors" />
                                 </div>
                               </div>
-                              <p className="text-[10px] text-zinc-500 font-mono">
-                                Vector Chunk ID: {src.chunk_id}
+                              <p className="text-[10px] text-zinc-500 font-mono flex items-center justify-between">
+                                <span>Vector Chunk ID: {src.chunk_id}</span>
+                                <span className="text-indigo-400/80 group-hover:underline">Inspect Raw Text Snippet ↗</span>
                               </p>
                             </div>
                           ))}
@@ -477,7 +542,62 @@ export function RAGChat() {
           <span className="text-zinc-600 hidden sm:inline">Press Enter to ask • Shift+Enter for newline</span>
         </div>
       </div>
+
+      {/* 5. SOURCE TEXT SNIPPET VIEWER MODAL */}
+      {activeSourceModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-2xl rounded-3xl border border-[#1E293B] bg-[#0E131F] p-6 shadow-2xl space-y-4">
+            <div className="flex items-start justify-between border-b border-[#1E293B] pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-base">{activeSourceModal.filename}</h4>
+                  <p className="text-xs font-mono text-zinc-400">
+                    Chunk ID: {activeSourceModal.chunk_id} • Document ID: {activeSourceModal.document_id.slice(0, 8)}...
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setActiveSourceModal(null)}
+                className="rounded-xl p-1.5 text-zinc-400 hover:bg-[#141B2D] hover:text-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Metrics Chips */}
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="rounded-xl bg-[#141B2D] border border-[#1E293B] px-3 py-1 text-zinc-300 font-mono">
+                {activeSourceModal.page_number ? `Page ${activeSourceModal.page_number}` : "Full Document"}
+              </span>
+              <span className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 font-bold text-emerald-400 font-mono">
+                {(activeSourceModal.score * 100).toFixed(1)}% Cosine Similarity
+              </span>
+            </div>
+
+            {/* Text Snippet Content Box */}
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
+                Retrieved Vector Chunk Text Snippet:
+              </span>
+              <div className="max-h-80 overflow-y-auto rounded-2xl border border-[#1E293B] bg-[#080B11] p-4 text-xs sm:text-sm font-mono text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                {activeSourceModal.text_snippet || "Text snippet preserved in vector metadata."}
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setActiveSourceModal(null)}
+                className="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+              >
+                Close Snippet Viewer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
