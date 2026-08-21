@@ -41,10 +41,8 @@ const navItems: NavItem[] = [
   },
   {
     name: "Settings",
-    href: "#",
+    href: "/settings",
     icon: Settings,
-    disabled: true,
-    badge: "Phase 4",
   },
 ];
 
