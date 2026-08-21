@@ -30,10 +30,8 @@ app.include_router(rag_router)
 app.include_router(rag_router, prefix="/api/v1")
 
 
-@app.get("/health", tags=["Health"])
-@app.head("/health", tags=["Health"])
-@app.get("/api/v1/health", tags=["Health"])
-@app.head("/api/v1/health", tags=["Health"])
+@app.api_route("/health", methods=["GET", "HEAD"], tags=["Health"])
+@app.api_route("/api/v1/health", methods=["GET", "HEAD"], tags=["Health"])
 async def health_check():
     """Health check endpoint for monitoring service availability."""
     return {"status": "healthy", "service": "nexusai-api"}
