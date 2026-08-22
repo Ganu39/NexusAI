@@ -14,12 +14,12 @@ import {
   Sliders,
   ChevronDown,
   ChevronUp,
-  Info,
   CornerDownRight,
   Trash2,
   Eye,
-  X,
   Database,
+  Paperclip,
+  Cpu,
 } from "lucide-react";
 import { AskResponse, AskSource } from "@/types";
 import { apiClient } from "@/lib/api";
@@ -27,10 +27,14 @@ import GlassCard from "@/components/ui/GlassCard";
 import ReasoningDrawer from "@/components/chat/ReasoningDrawer";
 import MobileKnowledgeSheet from "@/components/chat/MobileKnowledgeSheet";
 
-// Dynamic WebGL imports to prevent SSR issues
+// Dynamic WebGL 3D Canvas imports to prevent SSR issues
 const GlowingAIOrbCanvas = dynamic(() => import("@/components/3d/GlowingAIOrb"), {
   ssr: false,
-  loading: () => <div className="w-10 h-10 rounded-full bg-cyan-500/20 animate-pulse" />,
+  loading: () => (
+    <div className="w-16 h-16 rounded-full bg-cyan-500/20 blur-md animate-pulse flex items-center justify-center">
+      <Bot className="w-8 h-8 text-cyan-400" />
+    </div>
+  ),
 });
 
 const VectorParticleCloudCanvas = dynamic(() => import("@/components/3d/VectorParticleCloud"), {
@@ -242,28 +246,28 @@ export function RAGChat() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-10.5rem)] flex-col rounded-3xl border border-white/10 bg-slate-950/80 overflow-hidden shadow-2xl relative backdrop-blur-2xl">
-      {/* Background 3D Vector Particle Cloud */}
+    <div className="flex h-[calc(100vh-8.5rem)] flex-col rounded-3xl border border-cyan-500/20 bg-[#051424]/90 overflow-hidden shadow-2xl relative backdrop-blur-2xl">
+      {/* 3D WebGL Vector Particle Constellation Background */}
       <VectorParticleCloudCanvas />
 
       {/* 1. TOP HEADER & RAG CONTROLS */}
-      <div className="flex flex-wrap items-center justify-between border-b border-white/10 bg-slate-900/60 backdrop-blur-xl px-6 py-3.5 gap-4 z-10">
-        <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 flex items-center justify-center relative">
+      <div className="flex flex-wrap items-center justify-between border-b border-white/10 bg-slate-900/70 backdrop-blur-xl px-6 py-4 gap-4 z-10">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 relative flex items-center justify-center overflow-visible shrink-0">
             <GlowingAIOrbCanvas isProcessing={loading} />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-white text-base tracking-tight font-mono">
+            <div className="flex items-center gap-2.5">
+              <h3 className="font-bold text-white text-base sm:text-lg tracking-tight font-mono">
                 Grounded RAG Assistant
               </h3>
-              <span className="flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-cyan-400 border border-cyan-500/20">
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="flex items-center gap-1.5 rounded-full bg-cyan-500/10 px-3 py-0.5 text-[11px] font-semibold text-cyan-400 border border-cyan-500/30 shadow-sm">
+                <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
                 Knowledge Base Connected
               </span>
             </div>
             <p className="text-xs text-slate-400 font-mono">
-              Vector index connected • Real-time source grounding
+              3D Spatial Vector Index • Real-time source citations
             </p>
           </div>
         </div>
@@ -278,7 +282,7 @@ export function RAGChat() {
             <span>Knowledge Base</span>
           </button>
 
-          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-900/80 px-3.5 py-2 text-xs text-slate-300 shadow-sm">
+          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-900/90 px-4 py-2 text-xs text-slate-300 shadow-sm">
             <Sliders className="h-3.5 w-3.5 text-cyan-400" />
             <span className="text-[11px] text-slate-400 font-mono">Top-K Chunks:</span>
             <select
@@ -297,7 +301,7 @@ export function RAGChat() {
           {messages.length > 0 && (
             <button
               onClick={handleClearChat}
-              className="flex items-center gap-1.5 min-h-[44px] rounded-xl border border-rose-500/20 bg-rose-500/10 px-3.5 py-2 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 active:scale-95 transition-all"
+              className="flex items-center gap-1.5 min-h-[44px] rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 active:scale-95 transition-all"
               title="Clear conversation history"
             >
               <Trash2 className="h-3.5 w-3.5 text-rose-400" />
@@ -307,9 +311,9 @@ export function RAGChat() {
         </div>
       </div>
 
-      {/* 2. SUBTLE ARCHITECTURAL RETRIEVAL PIPELINE PROGRESS BAR */}
-      <div className="border-b border-white/5 bg-slate-900/40 px-6 py-2 overflow-x-auto z-10">
-        <div className="flex items-center justify-between min-w-[560px] text-[11px] font-mono text-slate-400">
+      {/* 2. ARCHITECTURAL RETRIEVAL PIPELINE STEPPER */}
+      <div className="border-b border-white/5 bg-slate-900/40 px-6 py-2.5 overflow-x-auto z-10">
+        <div className="flex items-center justify-between min-w-[580px] text-[11px] font-mono text-slate-400">
           {RAG_RETRIEVAL_STEPS.map((step, idx) => {
             const isCurrent = activePipelineStage === idx;
             const isPassed = activePipelineStage > idx;
@@ -320,12 +324,12 @@ export function RAGChat() {
                     isCurrent
                       ? "text-cyan-400 font-bold"
                       : isPassed
-                      ? "text-emerald-400"
+                      ? "text-emerald-400 font-semibold"
                       : "text-slate-500"
                   }`}
                 >
                   <span
-                    className={`h-1.5 w-1.5 rounded-full ${
+                    className={`h-2 w-2 rounded-full ${
                       isCurrent
                         ? "bg-cyan-400 animate-ping"
                         : isPassed
@@ -345,29 +349,30 @@ export function RAGChat() {
       </div>
 
       {/* 3. MESSAGES SCROLL AREA */}
-      <div className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6 z-10">
+      <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-6 z-10">
         {messages.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center text-center p-6 space-y-5">
-            <div className="relative flex h-16 w-16 items-center justify-center rounded-3xl bg-cyan-500/20 p-0.5 border border-cyan-400/30 shadow-xl shadow-cyan-500/10">
-              <Bot className="h-8 w-8 text-cyan-400" />
+          <div className="flex h-full flex-col items-center justify-center text-center p-6 space-y-6">
+            {/* 3D Interactive Mascot Canvas in Center */}
+            <div className="relative w-32 h-32 flex items-center justify-center">
+              <GlowingAIOrbCanvas isProcessing={loading} />
             </div>
 
-            <div className="max-w-md space-y-2">
-              <h4 className="text-lg font-bold text-white tracking-tight font-mono">
+            <div className="max-w-lg space-y-2">
+              <h4 className="text-xl font-bold text-white tracking-tight font-mono">
                 Ask Questions Grounded in Your Documents
               </h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                NexusAI retrieves semantic vector chunks from your document repository and
-                synthesizes grounded answers with verified source citations.
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-md mx-auto">
+                NexusAI retrieves semantic vector chunks from your FAISS repository and
+                synthesizes grounded answers using Gemini 2.5 Flash with verified source citations.
               </p>
             </div>
 
             {/* Suggested Question Pills */}
-            <div className="w-full max-w-xl space-y-2 pt-2">
-              <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
-                Suggested Questions:
+            <div className="w-full max-w-xl space-y-3 pt-2">
+              <div className="text-[11px] font-mono text-cyan-400/80 uppercase tracking-widest font-semibold">
+                SUGGESTED QUESTIONS:
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 {SUGGESTED_QUESTIONS.map((q) => (
                   <button
                     key={q}
@@ -375,10 +380,10 @@ export function RAGChat() {
                       setQuestion(q);
                       handleSend(q);
                     }}
-                    className="min-h-[48px] rounded-2xl border border-white/10 bg-slate-900/60 p-3.5 text-left text-slate-300 hover:border-cyan-400/50 hover:bg-slate-900/80 hover:text-white active:scale-[0.98] transition-all shadow-sm flex items-center justify-between group"
+                    className="min-h-[52px] rounded-2xl border border-white/10 bg-slate-900/70 backdrop-blur-md p-4 text-left text-slate-200 hover:border-cyan-400 hover:bg-slate-900 hover:text-white active:scale-[0.98] transition-all shadow-lg flex items-center justify-between group"
                   >
                     <span>💡 &quot;{q}&quot;</span>
-                    <span className="text-slate-500 group-hover:text-cyan-400 transition-colors">→</span>
+                    <span className="text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all">→</span>
                   </button>
                 ))}
               </div>
@@ -388,13 +393,13 @@ export function RAGChat() {
           messages.map((msg) => (
             <div
               key={msg.id}
-              className={`flex gap-3.5 ${
+              className={`flex gap-4 ${
                 msg.sender === "user" ? "justify-end" : "justify-start"
               }`}
             >
               {msg.sender === "assistant" && (
-                <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shrink-0 shadow-sm">
-                  <Bot className="h-4 w-4" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shrink-0 shadow-lg">
+                  <Bot className="h-5 w-5" />
                 </div>
               )}
 
@@ -405,16 +410,16 @@ export function RAGChat() {
               >
                 {/* User Bubble */}
                 {msg.sender === "user" ? (
-                  <div className="rounded-2xl bg-cyan-600 px-5 py-3.5 text-xs sm:text-sm text-white shadow-md shadow-cyan-600/20 leading-relaxed font-medium">
+                  <div className="rounded-2xl bg-cyan-600 px-5 py-3.5 text-xs sm:text-sm text-white shadow-lg shadow-cyan-600/25 leading-relaxed font-medium">
                     <p className="whitespace-pre-wrap">{msg.text}</p>
                   </div>
                 ) : (
                   /* Editorial AI Response Panel with Tactile GlassCard */
-                  <GlassCard className="w-full p-5 sm:p-6 text-xs sm:text-sm text-slate-100 space-y-4">
+                  <GlassCard className="w-full p-6 text-xs sm:text-sm text-slate-100 space-y-4">
                     {/* Header Grounding Status */}
                     {msg.response && (
-                      <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-white/10">
-                        <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center justify-between gap-2 pb-3.5 border-b border-white/10">
+                        <div className="flex items-center gap-2.5">
                           {msg.response.grounded ? (
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 border border-emerald-500/20 shadow-sm">
                               <CheckCircle2 className="h-3.5 w-3.5" />
@@ -427,7 +432,7 @@ export function RAGChat() {
                             </span>
                           )}
                           <span className="text-xs text-slate-400 font-mono">
-                            ({msg.response.retrieved_chunks} chunks)
+                            ({msg.response.retrieved_chunks} context chunks)
                           </span>
                         </div>
 
@@ -439,7 +444,7 @@ export function RAGChat() {
                             <span>
                               {expandedSources[msg.id]
                                 ? "Hide Citations"
-                                : `View ${msg.response.sources.length} Sources`}
+                                : `View ${msg.response.sources.length} Sources & Citations`}
                             </span>
                             {expandedSources[msg.id] ? (
                               <ChevronUp className="h-3.5 w-3.5" />
@@ -455,7 +460,7 @@ export function RAGChat() {
                     <ReasoningDrawer />
 
                     {/* Answer Body */}
-                    <div className="leading-relaxed text-slate-100 whitespace-pre-wrap">
+                    <div className="leading-relaxed text-slate-100 whitespace-pre-wrap text-sm sm:text-base font-sans">
                       {msg.text}
                     </div>
 
@@ -465,8 +470,9 @@ export function RAGChat() {
                         <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 uppercase tracking-wider">
                           <div className="flex items-center gap-1.5">
                             <CornerDownRight className="h-3.5 w-3.5 text-violet-400" />
-                            <span>Connected Sources:</span>
+                            <span>Connected Source Citations:</span>
                           </div>
+                          <span className="text-slate-500 text-[10px]">Click source to inspect snippet</span>
                         </div>
 
                         <div className="grid grid-cols-1 gap-2.5">
@@ -474,7 +480,7 @@ export function RAGChat() {
                             <div
                               key={src.chunk_id || sIdx}
                               onClick={() => setActiveSourceModal(src)}
-                              className="rounded-xl border border-white/10 bg-slate-900/80 p-3.5 space-y-2 text-slate-300 hover:border-violet-400/50 hover:bg-slate-900 transition-all cursor-pointer group shadow-sm"
+                              className="rounded-xl border border-white/10 bg-slate-950/80 p-3.5 space-y-2 text-slate-300 hover:border-violet-400/60 hover:bg-slate-900 transition-all cursor-pointer group shadow-sm"
                             >
                               <div className="flex items-center justify-between font-medium">
                                 <div className="flex items-center gap-2 text-violet-300 truncate max-w-[260px] sm:max-w-md">
@@ -483,7 +489,7 @@ export function RAGChat() {
                                 </div>
                                 <div className="flex items-center gap-2 shrink-0">
                                   <span className="rounded bg-violet-500/10 px-2.5 py-1 text-[10px] font-mono font-bold text-violet-400 border border-violet-500/20">
-                                    {(src.score * 100).toFixed(1)}% Relevance
+                                    {(src.score * 100).toFixed(1)}% Match
                                   </span>
                                   <Eye className="h-3.5 w-3.5 text-slate-500 group-hover:text-cyan-400 transition-colors" />
                                 </div>
@@ -502,8 +508,8 @@ export function RAGChat() {
               </div>
 
               {msg.sender === "user" && (
-                <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-800 text-slate-300 shrink-0 border border-white/10">
-                  <User className="h-4 w-4" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300 shrink-0 border border-white/10 shadow-md">
+                  <User className="h-5 w-5" />
                 </div>
               )}
             </div>
@@ -512,17 +518,20 @@ export function RAGChat() {
 
         {/* Dynamic Loading State */}
         {loading && (
-          <div className="flex gap-3.5 items-start">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shrink-0 animate-pulse">
-              <Bot className="h-4 w-4" />
+          <div className="flex gap-4 items-start">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shrink-0 animate-pulse">
+              <Bot className="h-5 w-5" />
             </div>
-            <div className="rounded-2xl border border-white/10 bg-slate-900/80 px-5 py-4 text-xs text-slate-300 flex items-center gap-3 shadow-md backdrop-blur-xl">
-              <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+            <div className="rounded-2xl border border-cyan-500/30 bg-slate-900/90 px-6 py-4 text-xs text-slate-200 flex items-center gap-3 shadow-xl backdrop-blur-2xl">
+              <Loader2 className="h-5 w-5 animate-spin text-cyan-400" />
               <div>
-                <p className="font-semibold text-white font-mono">
+                <p className="font-semibold text-white font-mono text-sm">
                   {activePipelineStage <= 2
                     ? "Searching vector database..."
                     : "Synthesizing answer with grounded citations..."}
+                </p>
+                <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+                  Filtering chunks & calculating vector similarity metrics
                 </p>
               </div>
             </div>
@@ -531,17 +540,17 @@ export function RAGChat() {
 
         {/* Error Feedback */}
         {error && (
-          <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-xs text-rose-300 flex items-center justify-between gap-3 shadow-sm">
+          <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300 flex items-center justify-between gap-3 shadow-md">
             <div className="flex items-center gap-3">
               <AlertTriangle className="h-5 w-5 text-rose-400 shrink-0" />
               <div>
-                <p className="font-semibold text-rose-200">Query Error</p>
+                <p className="font-semibold text-rose-200">Query Execution Error</p>
                 <p className="text-rose-300/80 mt-0.5">{error}</p>
               </div>
             </div>
             <button
               onClick={() => handleSend()}
-              className="rounded-xl border border-rose-500/30 bg-rose-600/20 px-3.5 py-2 text-xs font-semibold text-rose-200 hover:bg-rose-600/30 active:scale-95 transition-all"
+              className="rounded-xl border border-rose-500/40 bg-rose-600/20 px-4 py-2 text-xs font-semibold text-rose-200 hover:bg-rose-600/30 active:scale-95 transition-all"
             >
               Retry
             </button>
@@ -549,15 +558,24 @@ export function RAGChat() {
         )}
       </div>
 
-      {/* 4. PREMIUM INPUT FORM FOOTER */}
-      <div className="border-t border-white/10 bg-slate-900/80 backdrop-blur-xl p-4 sm:p-5 z-10">
+      {/* 4. PREMIUM FLOATING INPUT BAR FOOTER */}
+      <div className="border-t border-white/10 bg-slate-900/90 backdrop-blur-2xl p-4 sm:p-5 z-10">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSend();
           }}
-          className="flex gap-2.5"
+          className="flex items-center gap-3"
         >
+          <button
+            type="button"
+            onClick={() => setIsMobileSheetOpen(true)}
+            className="min-h-[48px] min-w-[48px] flex items-center justify-center rounded-2xl border border-white/10 bg-slate-950/80 text-slate-400 hover:text-white hover:border-cyan-400/50 active:scale-95 transition-all"
+            title="Attach Document"
+          >
+            <Paperclip className="w-5 h-5" />
+          </button>
+
           <input
             type="text"
             value={question}
@@ -565,12 +583,13 @@ export function RAGChat() {
             onKeyDown={handleKeyDown}
             placeholder="Ask a question grounded in your indexed knowledge base..."
             disabled={loading}
-            className="flex-1 min-h-[48px] rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/30 disabled:opacity-50 shadow-inner"
+            className="flex-1 min-h-[48px] rounded-2xl border border-white/10 bg-slate-950/90 px-5 py-3.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/30 disabled:opacity-50 shadow-inner"
           />
+
           <button
             type="submit"
             disabled={!question.trim() || loading}
-            className="min-h-[48px] min-w-[48px] flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 text-xs sm:text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/25 transition-all hover:bg-cyan-400 active:scale-95 disabled:opacity-50 shrink-0"
+            className="min-h-[48px] px-6 flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-cyan-500/25 transition-all hover:bg-cyan-400 active:scale-95 disabled:opacity-50 shrink-0"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -608,7 +627,7 @@ export function RAGChat() {
                 onClick={() => setActiveSourceModal(null)}
                 className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl p-1.5 text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
               >
-                <X className="h-5 w-5" />
+                <ChevronDown className="h-5 w-5" />
               </button>
             </div>
 
